@@ -1,0 +1,39 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+max_line_length = 120
+insert_final_newline = false
+trim_trailing_whitespace = true
+
+[*.java]
+indent_style = space
+indent_size = 4
+
+[*.xml]
+max_line_length = 150
+indent_style = space
+indent_size = 4
+
+[*.gradle]
+max_line_length = 150
+indent_style = space
+indent_size = 4
+
+[{*.jsp,*.html}]
+indent_style = space
+indent_size = 2
+
+[*.js]
+indent_style = space
+indent_size = 4
+quote_type = single
+
+[*.yml]
+indent_style = space
+indent_size = 2
+
+[*.{kt,kts}]
+disabled_rules=import-ordering
+insert_final_newline = true

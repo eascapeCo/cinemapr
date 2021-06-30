@@ -1,0 +1,4 @@
+rootProject.name = 'cinemapr'
+include 'cinemapr-bo'
+include 'cinemapr-api'
+
