@@ -24,7 +24,7 @@ public class Menu extends BaseEntity {
     private String urlAdr;
     private boolean useYn;
     private boolean dpYn;
-    private int dpSequence;
+    private int dpNo;
     @OneToMany(mappedBy = "parentMenu")
     private List<Menu> subMenus;
 }

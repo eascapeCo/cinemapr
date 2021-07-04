@@ -22,11 +22,12 @@ public class TestRunner implements ApplicationRunner {
         log.info("!!!!");
 
         // menu 생성
+        /*
         Menu rootMenu = new Menu();
         rootMenu.setMnuName("root-1");
         rootMenu.setMnuLv(1);
         rootMenu.setUseYn(true);
-        rootMenu.setDpSequence(1);
+        rootMenu.setDpNo(1);
         rootMenu.setRegDate(LocalDateTime.now());
         rootMenu.setRegNo(1L);
         rootMenu.setModDate(LocalDateTime.now());
@@ -38,7 +39,7 @@ public class TestRunner implements ApplicationRunner {
         subMenu.setMnuLv(2);
         subMenu.setParentMenu(rootM);
         subMenu.setUseYn(true);
-        subMenu.setDpSequence(10);
+        subMenu.setDpNo(10);
         subMenu.setRegDate(LocalDateTime.now());
         subMenu.setRegNo(1L);
         subMenu.setModDate(LocalDateTime.now());
@@ -50,12 +51,13 @@ public class TestRunner implements ApplicationRunner {
         subMenu2.setMnuLv(2);
         subMenu2.setParentMenu(rootM);
         subMenu2.setUseYn(true);
-        subMenu2.setDpSequence(20);
+        subMenu2.setDpNo(20);
         subMenu2.setRegDate(LocalDateTime.now());
         subMenu2.setRegNo(1L);
         subMenu2.setModDate(LocalDateTime.now());
         subMenu2.setModNo(1L);
         this.menuService.createMenu(subMenu2);
+         */
 /*
         Menu subMenubySub = new Menu();
         subMenubySub.setMnuName("root-1 sub-1 by sub-1");

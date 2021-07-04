@@ -1,12 +1,17 @@
+# jasypt encryptor
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/datajpa
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ENC(njg2iXXl9ktztWBBCet3A2c6QXkrUgp4nR2Z3YNJGYBUNen+Lq6AFf63yGYsYbJbQjc6rUEpMaKzJ6zbBbyr3hMLrmgWCB87jnEWmI+h6QUONWe/EN6LNJ3DNcyZZ8DTdcx9gWaBNPm+ttBDldFOkA==)
+    username: ENC(hgautNkYDOIahaI9iMVqKg==)
+    password: ENC(SlKSYwJ0FsK+68RlxooJQa/fjm2RRqc1)
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
         # show_sql: true
