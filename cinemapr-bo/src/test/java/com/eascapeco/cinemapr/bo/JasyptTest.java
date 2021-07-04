@@ -14,7 +14,7 @@ public class JasyptTest {
         String dbPw = "";
 
         StandardPBEStringEncryptor jasypt = new StandardPBEStringEncryptor();
-        jasypt.setPassword("cinemaPr2021!@");
+        jasypt.setPassword("");
         jasypt.setAlgorithm("PBEWithMD5AndDES");
 
         String encryptedDbUrl = jasypt.encrypt(dbUrl);
