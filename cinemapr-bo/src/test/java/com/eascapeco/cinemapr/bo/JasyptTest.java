@@ -9,7 +9,7 @@ public class JasyptTest {
     @Test
     void jasypt_encrypt_decrypt_test() {
 
-        String dbUrl = "jdbc:mariadb://dm1623242781256.fun25.co.kr:12002/cinemaprdev?characterEncoding=UTF-8&serverTimezone=UTC";
+        String dbUrl = "";
         String dbUser = "tester";
         String dbPw = "";
 
