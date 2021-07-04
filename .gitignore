@@ -359,4 +359,7 @@ bin/
 *.code-workspace
 .vscode
 
+### ###
+**/src/main/generated/
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
