@@ -14,7 +14,7 @@ import java.util.List;
 @Getter @Setter
 public class Menu extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mnuNo;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "preMnuNo")
