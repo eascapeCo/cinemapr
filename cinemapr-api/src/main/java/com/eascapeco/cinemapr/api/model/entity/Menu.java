@@ -1,5 +1,6 @@
 package com.eascapeco.cinemapr.api.model.entity;
 
+import com.eascapeco.cinemapr.api.model.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-public class Menu {
+public class Menu extends BaseEntity {
 
     @Id @GeneratedValue
     private Long mnuNo;
@@ -24,10 +25,6 @@ public class Menu {
     private boolean useYn;
     private boolean dpYn;
     private int dpSequence;
-    private LocalDateTime regDate;
-    private int regNo;
-    private LocalDateTime modDate;
-    private int modNo;
     @OneToMany(mappedBy = "parentMenu")
     private List<Menu> subMenus;
 }
