@@ -362,4 +362,10 @@ bin/
 ### ###
 **/src/main/generated/
 
+### vue webpack build static files ###
+/cinemapr-bo/src/main/resources/static
+
+### webpack config folder ###
+!**/frontend/build/
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
