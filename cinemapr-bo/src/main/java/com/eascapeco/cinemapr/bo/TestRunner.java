@@ -1,11 +1,14 @@
 package com.eascapeco.cinemapr.bo;
 
+import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.entity.Menu;
-import com.eascapeco.cinemapr.api.service.MenuService;
+import com.eascapeco.cinemapr.api.repository.MenuRepository;
+import com.eascapeco.cinemapr.api.service.menu.MenuService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,12 +18,19 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TestRunner implements ApplicationRunner {
 
-    private final MenuService menuService;
+    private final MenuRepository menuRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("!!!!");
 
+/*
+        Menu rootMenu = new Menu("root", null, 0, null, true, false, 1, 1L);
+        Menu rootM = this.menuRepository.save(rootMenu);
+
+ */
         // menu 생성
         /*
         Menu rootMenu = new Menu();
