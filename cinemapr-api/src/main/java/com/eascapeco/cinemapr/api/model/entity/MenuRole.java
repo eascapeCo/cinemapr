@@ -4,9 +4,7 @@ import com.eascapeco.cinemapr.api.model.entity.id.MenuRoleId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 

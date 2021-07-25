@@ -39,4 +39,5 @@ public class BoApplication {
 
         return encryptor;
     }
+
 }

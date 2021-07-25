@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Getter @Setter
@@ -17,4 +20,6 @@ public class Admin extends BaseEntity {
     private Boolean useYn;
     private Boolean pwdExpd;
 
+    @OneToMany(mappedBy = "admin", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private List<AdminRole> adminRoles = new ArrayList<>();
 }
