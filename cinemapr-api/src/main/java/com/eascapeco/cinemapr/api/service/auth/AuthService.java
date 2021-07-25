@@ -1,9 +1,10 @@
-package com.eascapeco.cinemapr.api.service;
+package com.eascapeco.cinemapr.api.service.auth;
 
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.entity.RefreshToken;
 import com.eascapeco.cinemapr.api.model.payload.LoginRequest;
 import com.eascapeco.cinemapr.api.security.JwtTokenProvider;
+import com.eascapeco.cinemapr.api.service.admin.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
