@@ -4,10 +4,9 @@ import com.eascapeco.cinemapr.api.exception.UserLoginException;
 import com.eascapeco.cinemapr.api.model.entity.RefreshToken;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.api.model.payload.LoginRequest;
-import com.eascapeco.cinemapr.api.service.AuthService;
+import com.eascapeco.cinemapr.api.service.auth.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +40,7 @@ public class BoAuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
 
         logger.info("Admin info : {}", loginRequest.toString());
 
