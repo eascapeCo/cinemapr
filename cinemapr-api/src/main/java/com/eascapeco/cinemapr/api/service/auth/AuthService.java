@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -32,14 +31,13 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private AuthenticationManager authenticationManager;
-    private PasswordEncoder passwordEncoder;
 
     public Optional<Authentication> authenticateUser(LoginRequest loginRequest) {
-        return Optional.ofNullable(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())));
+        return Optional.ofNullable(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getAdmId(), loginRequest.getPwd())));
     }
 
     public Optional<RefreshToken> createTokenByLogin(LoginRequest loginRequest) {
-        Admin currentAdmin = adminService.findByUsername(loginRequest.getUsername());
+        Admin currentAdmin = adminService.findByUsername(loginRequest.getAdmId());
 
 //        Refresh Token 확인하는 로직 추가해야됨
 
@@ -50,7 +48,7 @@ public class AuthService {
     }
 
     public String generateAccessToken(LoginRequest loginRequest) {
-        Admin currentAdmin = adminService.findByUsername(loginRequest.getUsername());
+        Admin currentAdmin = adminService.findByUsername(loginRequest.getAdmId());
 
         return jwtTokenProvider.generateToken(currentAdmin);
     }

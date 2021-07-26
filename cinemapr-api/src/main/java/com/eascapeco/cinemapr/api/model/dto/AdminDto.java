@@ -12,7 +12,7 @@ import java.util.Collection;
 public class AdminDto implements UserDetails {
 
     private Long admNo;
-    private String id;
+    private String admId;
     private String pwd;
     private LocalDateTime regDate;
     private Long regNo;
@@ -28,12 +28,12 @@ public class AdminDto implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.pwd;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.admId;
     }
 
     @Override

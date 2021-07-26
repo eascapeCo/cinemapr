@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import java.time.Instant;
 import java.util.Date;
 
 @Entity(name = "refresh_token")
@@ -15,7 +14,7 @@ public class RefreshToken {
 
     @Id
     @Column(name = "tkn_seq")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "refresh_token_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @SequenceGenerator(name = "refresh_token_seq", allocationSize = 1)
     private Long id;
 
