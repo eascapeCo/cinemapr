@@ -1,6 +1,7 @@
 package com.eascapeco.cinemapr.bo.controller.admin;
 
 import com.eascapeco.cinemapr.api.exception.UserRegistrationException;
+import com.eascapeco.cinemapr.api.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.payload.ApiResponse;
 import com.eascapeco.cinemapr.api.model.payload.RegistrationRequest;
 import com.eascapeco.cinemapr.api.service.admin.AdminService;
@@ -8,15 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@RestController
 public class AdminController {
 
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
@@ -33,6 +33,11 @@ public class AdminController {
                 return ResponseEntity.ok(new ApiResponse(true, "User registered successfully."));
             })
             .orElseThrow(() -> new UserRegistrationException(registrationRequest.getAdmId(), "Missing admin object in database"));
+    }
+
+    @GetMapping("/admin")
+    public AdminDto getAdmin() {
+        return new AdminDto();
     }
 
 }

@@ -42,9 +42,4 @@ public class BoApplication {
         return encryptor;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
-
 }

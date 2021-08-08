@@ -39,7 +39,7 @@ public class BoAuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
+    //@PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
 
         logger.info("Admin info : {}", loginRequest.toString());
