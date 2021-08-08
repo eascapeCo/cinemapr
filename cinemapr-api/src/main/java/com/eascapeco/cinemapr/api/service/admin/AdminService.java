@@ -24,7 +24,6 @@ public class AdminService {
     private final Logger logger = LoggerFactory.getLogger(AdminService.class);
 
     private final AdminRepository adminRepository;
-//    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
     /**
