@@ -1,5 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.provider;
 
+import com.eascapeco.cinemapr.api.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.repository.AdminRepository;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
@@ -43,8 +44,11 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         }
 
         log.info("pw 일치 ");
+        AdminDto adminDto = new AdminDto();
+        adminDto.setAdmId(admin.getAdmId());
+        adminDto.setAdmNo(admin.getAdmNo());
 
-        return null;
+        return new AjaxAuthenticationToken(adminDto, null, null);
     }
 
     @Override
