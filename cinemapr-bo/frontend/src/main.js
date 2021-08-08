@@ -8,7 +8,7 @@ import VueSimpleAlert from 'vue-simple-alert'
 // import VuetifyDialog from 'vuetify-dialog'
 
 // axios.defaults.baseURL = process.env.VUE_APP_BACKEND_SVC_URL
-axios.defaults.baseURL = 'http://localhost:3000'
+// axios.defaults.baseURL = 'http://localhost:3000'
 axios.defaults.headers['Content-Type'] = 'application/json'
 
 const local = axios.create({
