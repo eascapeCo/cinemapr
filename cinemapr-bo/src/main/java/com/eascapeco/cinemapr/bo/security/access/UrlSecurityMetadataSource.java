@@ -1,5 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.access;
 
+import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
@@ -16,11 +17,14 @@ import java.util.Map;
 public class UrlSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
     // 그룹권한 리소스 정보
-    private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap;
+    private final LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap;
     // private LinkedHashMap<AntPathRequestData, List<ConfigAttribute>> requestMap;
 
-    public UrlSecurityMetadataSource() {
-        requestMap = new LinkedHashMap<>();
+    private final SecurityResourceService securityResourceService;
+
+    public UrlSecurityMetadataSource(final LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap, final SecurityResourceService securityResourceService) {
+        this.requestMap = resourcesMap;
+        this.securityResourceService = securityResourceService;
         // requestMap.put(new AntPathRequestMatcher("/api/menus/"), List.of(new SecurityConfig("ROLE_MANAGER")));
         // requestMap.put(new AntPathRequestMatcher("/sample/sample-editor"), List.of(new SecurityConfig("ROLE_MANAGER")));
     }

@@ -18,6 +18,12 @@ public class BoMenuController {
 
     private final MenuService menuService;
 
+    @GetMapping("/menus")
+    public MenuDto getMenuList() {
+
+        return new MenuDto();
+    }
+
     @GetMapping("/menus/{id}")
     public MenuDto getMenu(@PathVariable Long id) {
 

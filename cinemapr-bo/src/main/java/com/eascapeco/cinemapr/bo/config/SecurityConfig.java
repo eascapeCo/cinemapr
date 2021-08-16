@@ -3,12 +3,14 @@ package com.eascapeco.cinemapr.bo.config;
 import com.eascapeco.cinemapr.api.repository.AdminRepository;
 import com.eascapeco.cinemapr.bo.security.access.UrlSecurityMetadataSource;
 import com.eascapeco.cinemapr.bo.security.common.RestAuthenticationEntryPoint;
+import com.eascapeco.cinemapr.bo.security.factory.UrlResourcesMapFactoryBean;
 import com.eascapeco.cinemapr.bo.security.filter.RestLoginProcessingFilter;
 import com.eascapeco.cinemapr.bo.security.filter.JWTAuthenticationFilter;
 import com.eascapeco.cinemapr.bo.security.filter.PermitAllFilter;
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationFailureHandler;
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationSuccessHandler;
 import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
+import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AdminRepository adminRepository;
 
+    private final SecurityResourceService securityResourceService;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {//authorize.antMatchers("/loginForm").permitAll()
 
@@ -56,9 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(se -> se.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(permitAllFilter(), FilterSecurityInterceptor.class);
-        http.addFilterBefore(jwtAuthenticationFilter(), FilterSecurityInterceptor.class);
         http.exceptionHandling(
             exceptionHandling -> exceptionHandling.authenticationEntryPoint(new RestAuthenticationEntryPoint()));
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(restLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
@@ -100,8 +104,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public JWTAuthenticationFilter jwtAuthenticationFilter() {
         return new JWTAuthenticationFilter();
     }
+
     @Bean
-    public PermitAllFilter permitAllFilter() {
+    public PermitAllFilter permitAllFilter() throws Exception {
         PermitAllFilter permitAllFilter = new PermitAllFilter(permitAllPattern);
         permitAllFilter.setAccessDecisionManager(affirmativeBased());
         permitAllFilter.setSecurityMetadataSource(urlSecurityMetadataSource());
@@ -136,8 +141,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public FilterInvocationSecurityMetadataSource urlSecurityMetadataSource() {
-        return new UrlSecurityMetadataSource();
+    public FilterInvocationSecurityMetadataSource urlSecurityMetadataSource() throws Exception {
+        return new UrlSecurityMetadataSource(urlResourcesMapFactoryBean().getObject(), securityResourceService);
+    }
+
+    private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {
+        UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
+        urlResourcesMapFactoryBean.setSecurityResourceService(securityResourceService);
+        return urlResourcesMapFactoryBean;
     }
 
     @Bean
