@@ -2,57 +2,51 @@ package com.eascapeco.cinemapr.bo.security.provider;
 
 import com.eascapeco.cinemapr.api.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
-import com.eascapeco.cinemapr.api.repository.AdminRepository;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
+import com.eascapeco.cinemapr.bo.service.auth.AuthService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.transaction.Transactional;
 
 @Slf4j
+@RequiredArgsConstructor
 public class RestAuthenticationProvider implements AuthenticationProvider {
 
-    private final AdminRepository adminRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
-    public RestAuthenticationProvider(final AdminRepository adminRepository, final PasswordEncoder passwordEncoder) {
-        this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final AuthService authService;
 
     @Override
     @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getName();
-        String password = (String) authentication.getCredentials();
 
-        log.info("username {}", username);
-        log.info("password {}", password);
-
-        final Admin admin = adminRepository.findByAdmId(username);
-        log.info("login info");
-        log.info("admin id {}", admin.getAdmId());
-        log.info("admin pw {}", admin.getPwd());
-
-        if (!passwordEncoder.matches(password, admin.getPwd())) {
-            throw new BadCredentialsException("Invalid Username or Password");
+        if (authentication == null) {
+            throw new IllegalArgumentException("authentication issue error");
         }
 
-        log.info("pw 일치 ");
-        AdminDto adminDto = new AdminDto();
-        adminDto.setAdmId(admin.getAdmId());
-        adminDto.setAdmNo(admin.getAdmNo());
+        String username = (String) authentication.getPrincipal();
+        String password = (String) authentication.getCredentials();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return new AjaxAuthenticationToken(adminDto, null, null);
+        log.info("authentication id : {}, pwd : {}", username, password);
+
+        Admin admin = authService.findByAdmId(username, password);
+
+        AdminDto account = new AdminDto();
+        account.setAdmId(admin.getAdmId());
+//        account.setPwd(admin.getPwd());
+        account.setAdmNo(admin.getAdmNo());
+        account.setAdminRole(admin.getAdminRole());
+
+        return new AjaxAuthenticationToken(account, account.getPassword(), account.getAuthorities());
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(AjaxAuthenticationToken.class);
     }
+
 }

@@ -17,10 +17,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
-@Getter @Setter @RequiredArgsConstructor
-public class JwtAuthenticationResponse {
+@Getter @Setter
+@RequiredArgsConstructor
+public class JwtAuthenticationResponse implements Serializable {
 
     private final String accessToken;
 

@@ -1,16 +1,17 @@
 package com.eascapeco.cinemapr.bo.config;
 
-import com.eascapeco.cinemapr.api.repository.AdminRepository;
 import com.eascapeco.cinemapr.bo.security.access.UrlSecurityMetadataSource;
 import com.eascapeco.cinemapr.bo.security.common.RestAuthenticationEntryPoint;
 import com.eascapeco.cinemapr.bo.security.factory.UrlResourcesMapFactoryBean;
-import com.eascapeco.cinemapr.bo.security.filter.RestLoginProcessingFilter;
 import com.eascapeco.cinemapr.bo.security.filter.JWTAuthenticationFilter;
 import com.eascapeco.cinemapr.bo.security.filter.PermitAllFilter;
+import com.eascapeco.cinemapr.bo.security.filter.RestLoginProcessingFilter;
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationFailureHandler;
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationSuccessHandler;
 import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
+import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String[] ignoredMatcherPattern = { "/js/**", "/**/favicon.ico" };
     private final String[] permitAllPattern = { "/login", "/", "/js/**" };
 
-    private final AdminRepository adminRepository;
+    private final AuthService authService;
+    private final ObjectMapper objectMapper;
 
     private final SecurityResourceService securityResourceService;
 
@@ -87,12 +89,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Bean
     public AuthenticationProvider restAuthenticationProvider() {
-        return  new RestAuthenticationProvider(adminRepository, passwordEncoder());
+        return new RestAuthenticationProvider(authService);
     }
 
     @Bean
     public AuthenticationSuccessHandler restAuthenticationSuccessHandler() {
-        return new RestAuthenticationSuccessHandler();
+        return new RestAuthenticationSuccessHandler(authService, objectMapper);
     }
 
     @Bean

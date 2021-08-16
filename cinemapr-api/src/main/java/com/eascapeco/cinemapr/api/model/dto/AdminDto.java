@@ -1,19 +1,29 @@
 package com.eascapeco.cinemapr.api.model.dto;
 
+import com.eascapeco.cinemapr.api.model.entity.AdminRole;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminDto implements UserDetails {
 
     private Long admNo;
     private String admId;
     private String pwd;
+    private List<AdminRole> adminRole;
+    private Collection<GrantedAuthority> authorities;
     private LocalDateTime regDate;
     private Long regNo;
     private LocalDateTime modDate;
@@ -23,7 +33,9 @@ public class AdminDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.authorities = adminRole.stream()
+            .map(role -> new SimpleGrantedAuthority(role.getRole().getRolNm()))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -55,4 +67,5 @@ public class AdminDto implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
 }

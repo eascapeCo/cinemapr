@@ -1,7 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.filter;
 
 import com.eascapeco.cinemapr.api.model.dto.AdminDto;
-import com.eascapeco.cinemapr.api.repository.AdminRepository;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpMethod;
