@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             .httpBasic().disable()
-            .authorizeRequests(authorize -> authorize.anyRequest().permitAll());
+            .authorizeRequests(authorize -> authorize.anyRequest().authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(se -> se.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(permitAllFilter(), FilterSecurityInterceptor.class);
@@ -138,7 +138,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_TEST");
+        roleHierarchy.setHierarchy("ROLE_ADMIN");
         return roleHierarchy;
     }
 

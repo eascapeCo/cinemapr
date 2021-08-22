@@ -57,4 +57,33 @@ public class MenuService {
 
         return menuDto;
     }
+
+    public List<MenuDto> getMenuList() {
+        List<Menu> menus = menuRepository.findAllMenus(1L);
+
+        List<MenuDto> menuDtos = new ArrayList<>();
+        Long preMnuNo = null;
+        for (Menu menu : menus) {
+            preMnuNo = (menu.getParentMenu() == null)? null : menu.getParentMenu().getMnuNo();
+            menuDtos.add(new MenuDto(menu.getMnuNo(), preMnuNo, menu.getMnuName(), menu.getUrlAdr(), menu.isUseYn(), menu.isDpYn(), menu.getDpNo(), menu.getModDate(), menu.getModNo(), menu.getRegDate(), menu.getRegNo()));
+        }
+
+        return getDispMenuList(menuDtos, null);
+    }
+
+    private List<MenuDto> getDispMenuList(List<MenuDto> menuList, Long preMnuNo) {
+        List<MenuDto> rv = new ArrayList<>();
+
+        for (MenuDto menu : menuList) {
+            if (menu.getPreMnuNo() == preMnuNo) {
+                MenuDto copyMenu = new MenuDto();
+                BeanUtils.copyProperties(menu, copyMenu);
+
+                copyMenu.setSubMenus(this.getDispMenuList(menuList, copyMenu.getMnuNo()));
+                rv.add(copyMenu);
+            }
+        }
+
+        return rv;
+    }
 }

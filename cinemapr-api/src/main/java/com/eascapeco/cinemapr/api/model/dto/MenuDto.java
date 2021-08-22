@@ -50,4 +50,18 @@ public class MenuDto {
         this.regDate = regDate;
         this.regNo = regNo;
     }
+
+    public MenuDto(Long mnuNo, Long preMnuNo, String mnuName, String urlAdr, boolean useYn, boolean dpYn, int dpNo, LocalDateTime modDate, Long modNo, LocalDateTime regDate, Long regNo) {
+        this.mnuNo = mnuNo;
+        this.preMnuNo = preMnuNo;
+        this.mnuName = mnuName;
+        this.urlAdr = urlAdr;
+        this.useYn = useYn;
+        this.dpYn = dpYn;
+        this.dpNo = dpNo;
+        this.modDate = modDate;
+        this.modNo = modNo;
+        this.regDate = regDate;
+        this.regNo = regNo;
+    }
 }

@@ -18,4 +18,6 @@ public class Role extends BaseEntity {
 
     private String rolNm;
 
+    private String rolDesc;
+
 }

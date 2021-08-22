@@ -6,6 +6,9 @@ import com.eascapeco.cinemapr.api.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,9 +20,19 @@ import java.util.List;
 public class RoleService {
 
     private final RoleRepository roleRepository;
-    public Page<RoleDto> getRoles(RoleDto roles) {
+    public Page<RoleDto> getRoles(RoleDto roleDto) {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Page<Role> roles = roleRepository.findAll(pageRequest);
 
-        return null;
+        return roles.map(role ->
+            new RoleDto(
+                role.getRolNo(),
+                role.getRolNm(),
+                role.getRolDesc(),
+                role.getRegDate(),
+                role.getRegNo(),
+                role.getModDate(),
+                role.getModNo()));
     }
 
     public RoleDto getOneRoles(Long id) {

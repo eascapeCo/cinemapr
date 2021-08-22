@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -19,9 +20,9 @@ public class BoMenuController {
     private final MenuService menuService;
 
     @GetMapping("/menus")
-    public MenuDto getMenuList() {
+    public List<MenuDto> getMenuList() {
 
-        return new MenuDto();
+        return menuService.getMenuList();
     }
 
     @GetMapping("/menus/{id}")
