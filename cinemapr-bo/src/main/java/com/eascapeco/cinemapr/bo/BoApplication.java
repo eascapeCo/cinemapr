@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 @EntityScan(basePackages = "com.eascapeco.cinemapr")
 @EnableJpaRepositories(basePackages = "com.eascapeco.cinemapr")
 @SpringBootApplication(scanBasePackages = "com.eascapeco.cinemapr")
@@ -42,4 +41,8 @@ public class BoApplication {
         return encryptor;
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

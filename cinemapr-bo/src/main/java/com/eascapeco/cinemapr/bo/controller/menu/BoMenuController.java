@@ -28,7 +28,7 @@ public class BoMenuController {
     @GetMapping("/menus/{id}")
     public MenuDto getMenu(@PathVariable Long id) {
 
-        return new MenuDto();
+        return menuService.getMenu(id);
     }
 
     @RequestMapping(value = "/menus", method = RequestMethod.POST)

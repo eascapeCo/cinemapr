@@ -4,6 +4,7 @@ import com.eascapeco.cinemapr.api.exception.ResourceAlreadyInUseException;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.payload.RegistrationRequest;
 import com.eascapeco.cinemapr.api.repository.AdminRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,16 +14,17 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BoAdminService {
 
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
-
+/*
     public BoAdminService(AdminRepository adminRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
+*/
     /**
      * Finds a admin in the database by username
      * @return

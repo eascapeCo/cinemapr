@@ -1,6 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.handler;
 
-import com.eascapeco.cinemapr.api.model.dto.AdminDto;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;

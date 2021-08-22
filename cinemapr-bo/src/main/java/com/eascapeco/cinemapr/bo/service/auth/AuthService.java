@@ -4,6 +4,7 @@ import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,17 +21,12 @@ import java.util.Date;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AuthService {
 
     private final BoAdminService boAdminService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthService(BoAdminService boAdminService, JwtTokenProvider jwtTokenProvider, @Lazy PasswordEncoder passwordEncoder) {
-        this.boAdminService = boAdminService;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public JwtAuthenticationResponse createTokenByLogin(String admId) {
         Admin currentAdmin = boAdminService.findByAdmId(admId);

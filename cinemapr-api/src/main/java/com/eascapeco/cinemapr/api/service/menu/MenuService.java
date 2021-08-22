@@ -53,16 +53,26 @@ public class MenuService {
     public MenuDto getMenu(Long mnuNo) {
 
         Menu findMenu = menuRepository.findById(mnuNo).orElseThrow(BadRequestException::new);
-        MenuDto menuDto = new MenuDto(findMenu.getMnuNo(), findMenu.isUseYn(), findMenu.isDpYn(), findMenu.getDpNo(), findMenu.getModDate(), findMenu.getModNo(), findMenu.getRegDate(), findMenu.getRegNo());
 
-        return menuDto;
+        return new MenuDto(
+            findMenu.getMnuNo(),
+            findMenu.getParentMenu() == null ? null : findMenu.getParentMenu().getMnuNo(),
+            findMenu.getMnuName(),
+            findMenu.getUrlAdr(),
+            findMenu.isUseYn(),
+            findMenu.isDpYn(),
+            findMenu.getDpNo(),
+            findMenu.getModDate(),
+            findMenu.getModNo(),
+            findMenu.getRegDate(),
+            findMenu.getRegNo());
     }
 
     public List<MenuDto> getMenuList() {
         List<Menu> menus = menuRepository.findAllMenus(1L);
 
         List<MenuDto> menuDtos = new ArrayList<>();
-        Long preMnuNo = null;
+        Long preMnuNo;
         for (Menu menu : menus) {
             preMnuNo = (menu.getParentMenu() == null)? null : menu.getParentMenu().getMnuNo();
             menuDtos.add(new MenuDto(menu.getMnuNo(), preMnuNo, menu.getMnuName(), menu.getUrlAdr(), menu.isUseYn(), menu.isDpYn(), menu.getDpNo(), menu.getModDate(), menu.getModNo(), menu.getRegDate(), menu.getRegNo()));

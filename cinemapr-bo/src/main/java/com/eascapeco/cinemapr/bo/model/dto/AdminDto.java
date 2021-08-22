@@ -1,4 +1,4 @@
-package com.eascapeco.cinemapr.api.model.dto;
+package com.eascapeco.cinemapr.bo.model.dto;
 
 import com.eascapeco.cinemapr.api.model.entity.AdminRole;
 import lombok.AllArgsConstructor;

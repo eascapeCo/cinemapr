@@ -152,9 +152,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         urlResourcesMapFactoryBean.setSecurityResourceService(securityResourceService);
         return urlResourcesMapFactoryBean;
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
