@@ -6,6 +6,7 @@ import com.eascapeco.cinemapr.bo.security.factory.UrlResourcesMapFactoryBean;
 import com.eascapeco.cinemapr.bo.security.filter.JWTAuthenticationFilter;
 import com.eascapeco.cinemapr.bo.security.filter.PermitAllFilter;
 import com.eascapeco.cinemapr.bo.security.filter.RestLoginProcessingFilter;
+import com.eascapeco.cinemapr.bo.security.handler.JwtAccessDeniedHandler;
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationFailureHandler;
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationSuccessHandler;
 import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
@@ -29,8 +30,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
@@ -62,8 +61,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(se -> se.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(permitAllFilter(), FilterSecurityInterceptor.class);
-        http.exceptionHandling(
-            exceptionHandling -> exceptionHandling.authenticationEntryPoint(new RestAuthenticationEntryPoint()));
+        http.exceptionHandling(exceptionHandling ->
+            exceptionHandling.authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                            .accessDeniedHandler(jwtAccessDeniedHandler()));
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(restLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -99,7 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationFailureHandler restAuthenticationFailureHandler() {
-        return new RestAuthenticationFailureHandler();
+        return new RestAuthenticationFailureHandler(objectMapper);
     }
 
     @Bean
@@ -151,5 +151,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
         urlResourcesMapFactoryBean.setSecurityResourceService(securityResourceService);
         return urlResourcesMapFactoryBean;
+    }
+
+    public JwtAccessDeniedHandler jwtAccessDeniedHandler() {
+        return new JwtAccessDeniedHandler(objectMapper);
     }
 }

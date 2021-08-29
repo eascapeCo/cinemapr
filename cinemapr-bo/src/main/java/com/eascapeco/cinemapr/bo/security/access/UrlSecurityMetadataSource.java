@@ -3,15 +3,14 @@ package com.eascapeco.cinemapr.bo.security.access;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class UrlSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
@@ -25,7 +24,10 @@ public class UrlSecurityMetadataSource implements FilterInvocationSecurityMetada
     public UrlSecurityMetadataSource(final LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap, final SecurityResourceService securityResourceService) {
         this.requestMap = resourcesMap;
         this.securityResourceService = securityResourceService;
-        // requestMap.put(new AntPathRequestMatcher("/api/menus/"), List.of(new SecurityConfig("ROLE_MANAGER")));
+        requestMap.put(new AntPathRequestMatcher("/api/menus"), List.of(new SecurityConfig("ROLE_MANAGER")));
+        // requestMap.put(new AntPathRequestMatcher("/api/menus/**"), List.of(new SecurityConfig("ROLE_MANAGER")));
+        requestMap.put(new AntPathRequestMatcher("/api/menus/excel"), List.of(new SecurityConfig("ROLE_ADMIN")));
+        requestMap.put(new AntPathRequestMatcher("/api/menus/**"), List.of(new SecurityConfig("ROLE_MANAGER")));
         // requestMap.put(new AntPathRequestMatcher("/sample/sample-editor"), List.of(new SecurityConfig("ROLE_MANAGER")));
     }
 
@@ -53,7 +55,9 @@ public class UrlSecurityMetadataSource implements FilterInvocationSecurityMetada
 
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
-        return null;
+        Set<ConfigAttribute> allAttributes = new HashSet<>();
+        this.requestMap.values().forEach(allAttributes::addAll);
+        return allAttributes;
     }
 
     @Override

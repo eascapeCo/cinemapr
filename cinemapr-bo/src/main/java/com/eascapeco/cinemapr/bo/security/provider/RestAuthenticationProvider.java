@@ -1,6 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.provider;
 
-import com.eascapeco.cinemapr.api.model.dto.AdminDto;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;

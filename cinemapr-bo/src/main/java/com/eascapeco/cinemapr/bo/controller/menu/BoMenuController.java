@@ -2,9 +2,11 @@ package com.eascapeco.cinemapr.bo.controller.menu;
 
 import com.eascapeco.cinemapr.api.model.dto.MenuDto;
 import com.eascapeco.cinemapr.api.service.menu.MenuService;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,8 +27,17 @@ public class BoMenuController {
         return menuService.getMenuList();
     }
 
+    @GetMapping("/menus/excel")
+    public MenuDto menuDtoExcel() {
+
+        return new MenuDto();
+    }
+
     @GetMapping("/menus/{id}")
-    public MenuDto getMenu(@PathVariable Long id) {
+    public MenuDto getMenu(@PathVariable Long id, @AuthenticationPrincipal AdminDto loginUser) {
+
+        log.info("loginUser -> {}", loginUser);
+        log.info("loginUser -> {}", loginUser.getAdmNo());
 
         return menuService.getMenu(id);
     }
