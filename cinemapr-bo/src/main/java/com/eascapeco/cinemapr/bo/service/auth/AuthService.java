@@ -51,4 +51,13 @@ public class AuthService {
 
         return findAdmin;
     }
+
+    /**
+     * Finds a admin in the database by admin no
+     * @param adminNo
+     * @return
+     */
+    public Admin findByAdmNo(Long adminNo) {
+        return boAdminService.findByAdmNo(adminNo);
+    }
 }

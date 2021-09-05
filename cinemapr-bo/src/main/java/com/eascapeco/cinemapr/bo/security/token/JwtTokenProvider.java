@@ -1,16 +1,15 @@
 package com.eascapeco.cinemapr.bo.security.token;
 
+import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.entity.RefreshToken;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -18,11 +17,9 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
-@ToString
+@Slf4j
 @Component
 public class JwtTokenProvider implements Serializable {
-
-    private final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     static final long JWT_TOKEN_EXP = (60 * 1 * 1000); // 30 mins
     static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24 * 1000); // 30 days
@@ -66,7 +63,7 @@ public class JwtTokenProvider implements Serializable {
     /**
      * 리프레쉬 토큰 생성 메소드
      *
-     * @param Admin
+     * @param chkAdm
      * @return Optional
      */
     public String refreshJwtToken(Admin chkAdm) {
@@ -103,8 +100,13 @@ public class JwtTokenProvider implements Serializable {
     public String generateToken(Admin chkAdm) {
         Map<String, Object> map = new HashMap<>();
 
+        chkAdm.getRoleList().forEach(s -> {
+            log.info("Role chk : {}", s.getRole());
+        });
+
         map.put("admId", chkAdm.getAdmId());
         map.put("admNo", chkAdm.getAdmNo());
+        map.put("admRole", chkAdm.getRoleList());
 
         List<String> rolesList = new ArrayList<>();
 
@@ -156,13 +158,23 @@ public class JwtTokenProvider implements Serializable {
     }
 
     /**
+     *
+     * @param token
+     * @return
+     */
+    public List<GrantedAuthority> getAuthorityListFromToken(String token) {
+        return (List<GrantedAuthority>) getClaimFromToken(token).get("admRole");
+
+    }
+
+    /**
      * retrieve admin number from jwt token
      *
      * @param token
      * @return
      */
-    public int getAdminNoFromToken(String token) {
-        return (int) getClaimFromToken(token).get("admNo");
+    public Long getAdminNoFromToken(String token) {
+        return (Long) getClaimFromToken(token).get("admNo");
     }
 
     /**
@@ -193,19 +205,41 @@ public class JwtTokenProvider implements Serializable {
     }
 
     /**
-     * validate token
-     *
-     * @param token
-     * @param admin
-     * @return
+     * Validates if a token satisfies the following properties
+     * - Signature is not malformed
+     * - Token hasn't expired
+     * - Token is supported
+     * - Token has not recently been logged out.
      */
-    public Boolean validateToken(String token, Admin admin) {
-        // InvalidTokenException
-        final int admNo = getAdminNoFromToken(token);
-        return (admNo == admin.getAdmNo() && !isTokenExpired(token));
+    public boolean validateToken(String authToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+
+        } catch (SignatureException ex) {
+            log.error("Invalid JWT signature");
+            throw new InvalidTokenRequestException("JWT", authToken, "Incorrect signature");
+
+        } catch (MalformedJwtException ex) {
+            log.error("Invalid JWT token");
+            throw new InvalidTokenRequestException("JWT", authToken, "Malformed jwt token");
+
+        } catch (ExpiredJwtException ex) {
+            log.error("Expired JWT token");
+            throw new InvalidTokenRequestException("JWT", authToken, "Token expired. Refresh required");
+
+        } catch (UnsupportedJwtException ex) {
+            log.error("Unsupported JWT token");
+            throw new InvalidTokenRequestException("JWT", authToken, "Unsupported JWT token");
+
+        } catch (IllegalArgumentException ex) {
+            log.error("JWT claims string is empty.");
+            throw new InvalidTokenRequestException("JWT", authToken, "Illegal argument token");
+        }
+        return true;
     }
 
     public String getExpiresIn(String token) {
         return Long.toString(Math.abs(getClaimFromToken(token).getExpiration().getTime() - new Date(System.currentTimeMillis()).getTime() - 1000));
     }
+
 }

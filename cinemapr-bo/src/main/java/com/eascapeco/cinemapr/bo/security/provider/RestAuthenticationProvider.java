@@ -1,7 +1,7 @@
 package com.eascapeco.cinemapr.bo.security.provider;
 
-import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         account.setAdmId(admin.getAdmId());
 //        account.setPwd(admin.getPwd());
         account.setAdmNo(admin.getAdmNo());
-        account.setAdminRole(admin.getAdminRole());
+        account.setAdminRole(admin.getRoleList());
 
         return new AjaxAuthenticationToken(account, account.getPassword(), account.getAuthorities());
     }

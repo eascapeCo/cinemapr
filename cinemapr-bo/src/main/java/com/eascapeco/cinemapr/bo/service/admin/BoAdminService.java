@@ -6,7 +6,9 @@ import com.eascapeco.cinemapr.api.model.payload.RegistrationRequest;
 import com.eascapeco.cinemapr.api.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,22 +17,32 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BoAdminService {
+public class BoAdminService implements UserDetailsService {
 
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
-/*
-    public BoAdminService(AdminRepository adminRepository, @Lazy PasswordEncoder passwordEncoder) {
-        this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
-*/
+
     /**
      * Finds a admin in the database by username
+     * @param admId
      * @return
      */
     public Admin findByAdmId(String admId) {
         return adminRepository.findByAdmId(admId);
+    }
+
+    /**
+     * Finds a admin in the database by admin no
+     * @param adminNo
+     * @return
+     */
+    public Admin findByAdmNo(Long adminNo) {
+        return adminRepository.findByAdmNo(adminNo);
     }
 
     /**
@@ -40,7 +52,7 @@ public class BoAdminService {
      */
     public Optional<Admin> registerAdmin(RegistrationRequest newRegistrationRequest) {
         String newRegistrationRequestAdminId = newRegistrationRequest.getAdmId();
-        if (adminRepository.existsByadmId(newRegistrationRequestAdminId)) {
+        if (adminRepository.existsByAdmId(newRegistrationRequestAdminId)) {
             log.error("Admin Id already exists: " + newRegistrationRequestAdminId);
             throw new ResourceAlreadyInUseException("Admin Id", "Admin", newRegistrationRequestAdminId);
         }

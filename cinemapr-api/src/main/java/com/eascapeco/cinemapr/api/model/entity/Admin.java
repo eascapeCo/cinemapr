@@ -10,6 +10,7 @@ import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,6 +38,6 @@ public class Admin extends BaseEntity {
     private Boolean pwdExpd;
 
     @OneToMany(mappedBy = "admin", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<AdminRole> adminRole;
+    private List<AdminRole> roleList = new ArrayList<>();
 
 }
