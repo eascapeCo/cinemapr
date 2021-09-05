@@ -1,7 +1,8 @@
 package com.eascapeco.cinemapr.api.model.entity.base;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -11,8 +12,10 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class BaseEntity {
     @Column(updatable = false)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDateTime regDate;
     @Column(updatable = false)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private Long regNo;
 
     private LocalDateTime modDate;

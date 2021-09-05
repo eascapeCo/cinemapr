@@ -13,12 +13,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Slf4j
 @Component
+@Transactional
 public class JwtTokenProvider implements Serializable {
 
     static final long JWT_TOKEN_EXP = (60 * 1 * 1000); // 30 mins
@@ -43,11 +46,10 @@ public class JwtTokenProvider implements Serializable {
      * @param admin
      * @return
      */
-//    public String createJwtToken(List<String> li, Admin admin) {
     public String createJwtToken(Map<String, Object> map, Admin admin) {
         return Jwts.builder().setClaims(map)
-                   .setIssuedAt(new Date(System.currentTimeMillis()))
-                   .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_EXP))
+                   .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+                   .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_TOKEN_EXP).toInstant()))
                    .signWith(key, SignatureAlgorithm.HS256)
                    .compact();
 
@@ -69,8 +71,8 @@ public class JwtTokenProvider implements Serializable {
     public String refreshJwtToken(Admin chkAdm) {
         Map<String, Object> map = new HashMap<>();
         return Jwts.builder().setClaims((Claims) new HashMap<>().put("admNo", chkAdm.getAdmNo()))
-                             .setIssuedAt(new Date(System.currentTimeMillis()))
-                             .setExpiration(new Date(System.currentTimeMillis() + JWT_REFRESH_TOKEN_EXP))
+                             .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+                             .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_REFRESH_TOKEN_EXP).toInstant()))
                              .signWith(key, SignatureAlgorithm.HS256)
                              .compact();
 
@@ -97,6 +99,7 @@ public class JwtTokenProvider implements Serializable {
      * @param chkAdm
      * @return
      */
+    @Transactional
     public String generateToken(Admin chkAdm) {
         Map<String, Object> map = new HashMap<>();
 
