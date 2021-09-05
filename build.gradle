@@ -38,20 +38,6 @@ allprojects {
         }
     }
 
-    task initSourceFolders {
-        sourceSets*.java.srcDirs*.each {
-            if (!it.exists()) {
-                it.mkdirs()
-            }
-        }
-
-        sourceSets*.resources.srcDirs*.each {
-            if (!it.exists()) {
-                it.mkdirs()
-            }
-        }
-    }
-
     dependencies {
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
@@ -78,7 +64,19 @@ allprojects {
 }
 
 subprojects {
+    task initSourceFolders {
+        sourceSets*.java.srcDirs*.each {
+            if (!it.exists()) {
+                it.mkdirs()
+            }
+        }
 
+        sourceSets*.resources.srcDirs*.each {
+            if (!it.exists()) {
+                it.mkdirs()
+            }
+        }
+    }
 }
 
 task cleanGeneatedDir(type: Delete) {
