@@ -1,6 +1,5 @@
 package com.eascapeco.cinemapr.bo.security.filter;
 
-import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +34,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwtToken) && jwtTokenProvider.validateToken(jwtToken)) {
                 Long adminNo = jwtTokenProvider.getAdminNoFromToken(jwtToken);
                 log.info("adminNo: {}", adminNo);
-                Admin findAdmin = authService.findByAdmNo(adminNo);
                 List<GrantedAuthority> authorityList = jwtTokenProvider.getAuthorityListFromToken(jwtToken);
-
-
+                log.info("authorityList : {}", authorityList);
+//                authorityList.forEach(s -> {
+//                    System.out.println("authorityList = " + s);
+//                });
+//                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
         } catch (Exception e) {
@@ -47,6 +49,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+
     }
 
 

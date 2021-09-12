@@ -2,6 +2,7 @@ package com.eascapeco.cinemapr.bo.service.auth;
 
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtAuthenticationResponse createTokenByLogin(String admId) {
-        Admin currentAdmin = boAdminService.findByAdmId(admId);
-
+    public JwtAuthenticationResponse createTokenByLogin(AdminDto adminDto) {
 //        Refresh Token 확인하는 로직 추가해야됨
 
-        String refreshToken = jwtTokenProvider.refreshJwtToken(currentAdmin);
-        String accessToken = jwtTokenProvider.generateToken(currentAdmin);
+        String refreshToken = jwtTokenProvider.refreshJwtToken(adminDto);
+        String accessToken = jwtTokenProvider.generateToken(adminDto);
         Date expiryDuration = jwtTokenProvider.getExpirationDateFromToken(accessToken);
 
         JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(accessToken, refreshToken, expiryDuration);

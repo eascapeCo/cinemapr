@@ -1,8 +1,8 @@
 package com.eascapeco.cinemapr.bo.security.token;
 
 import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
-import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.entity.RefreshToken;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -46,7 +47,8 @@ public class JwtTokenProvider implements Serializable {
      * @param admin
      * @return
      */
-    public String createJwtToken(Map<String, Object> map, Admin admin) {
+    @Deprecated
+    public String createJwtToken(Map<String, Object> map, AdminDto admin) {
         return Jwts.builder().setClaims(map)
                    .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                    .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_TOKEN_EXP).toInstant()))
@@ -68,7 +70,7 @@ public class JwtTokenProvider implements Serializable {
      * @param chkAdm
      * @return Optional
      */
-    public String refreshJwtToken(Admin chkAdm) {
+    public String refreshJwtToken(AdminDto chkAdm) {
         Map<String, Object> map = new HashMap<>();
         return Jwts.builder().setClaims((Claims) new HashMap<>().put("admNo", chkAdm.getAdmNo()))
                              .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
@@ -100,25 +102,18 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     @Transactional
-    public String generateToken(Admin chkAdm) {
-        Map<String, Object> map = new HashMap<>();
+    public String generateToken(AdminDto chkAdm) {
+        List authorityList = chkAdm.getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
-        chkAdm.getRoleList().forEach(s -> {
-            log.info("Role chk : {}", s.getRole());
-        });
-
-        map.put("admId", chkAdm.getAdmId());
-        map.put("admNo", chkAdm.getAdmNo());
-        map.put("admRole", chkAdm.getRoleList());
-
-        List<String> rolesList = new ArrayList<>();
-
-//        for (GrantedAuthority a: chkAdm.getAuthorities()) {
-//            rolesList.add(a.getAuthority());
-//        }
-
-//        map.put("roles", rolesList);
-        return createJwtToken(map, chkAdm);
+        return Jwts.builder().setSubject(chkAdm.getAdmNo().toString())
+            .claim("authorities", authorityList)
+            .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+            .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_TOKEN_EXP).toInstant()))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
     }
 
     /**
@@ -127,7 +122,7 @@ public class JwtTokenProvider implements Serializable {
      * @param chkAdm
      * @return
      */
-    public RefreshToken genRefreshToken(Admin chkAdm) {
+    public RefreshToken genRefreshToken(AdminDto chkAdm) {
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(refreshJwtToken(chkAdm));
@@ -166,7 +161,7 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     public List<GrantedAuthority> getAuthorityListFromToken(String token) {
-        return (List<GrantedAuthority>) getClaimFromToken(token).get("admRole");
+        return (List<GrantedAuthority>) getClaimFromToken(token).get("authorities");
 
     }
 
@@ -177,7 +172,7 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     public Long getAdminNoFromToken(String token) {
-        return (Long) getClaimFromToken(token).get("admNo");
+        return Long.parseLong(getClaimFromToken(token).get("sub").toString());
     }
 
     /**

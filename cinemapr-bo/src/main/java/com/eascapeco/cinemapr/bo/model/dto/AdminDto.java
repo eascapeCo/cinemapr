@@ -1,10 +1,7 @@
 package com.eascapeco.cinemapr.bo.model.dto;
 
 import com.eascapeco.cinemapr.api.model.entity.AdminRole;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class AdminDto implements UserDetails {
 
     private Long admNo;
@@ -34,7 +32,7 @@ public class AdminDto implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities = adminRole.stream()
-            .map(role -> new SimpleGrantedAuthority(role.getRole().getRolNm()))
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getRolNm()))
             .collect(Collectors.toList());
     }
 

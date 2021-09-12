@@ -25,8 +25,8 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        AdminDto account = (AdminDto) authentication.getPrincipal();
-        JwtAuthenticationResponse jwtAuthenticationResponse = authService.createTokenByLogin(account.getAdmId());
+        AdminDto adminDto = (AdminDto) authentication.getPrincipal();
+        JwtAuthenticationResponse jwtAuthenticationResponse = authService.createTokenByLogin(adminDto);
 
         try {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
