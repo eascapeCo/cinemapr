@@ -4,9 +4,9 @@ import com.eascapeco.cinemapr.api.exception.ResourceAlreadyInUseException;
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.payload.RegistrationRequest;
 import com.eascapeco.cinemapr.api.repository.AdminRepository;
+import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,27 +22,29 @@ public class BoAdminService implements UserDetailsService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
-
     /**
      * Finds a admin in the database by username
-     * @param admId
+     * @param adminId
      * @return
      */
-    public Admin findByAdmId(String admId) {
-        return adminRepository.findByAdmId(admId);
+    @Override
+    public AdminDto loadUserByUsername(String adminId) throws UsernameNotFoundException {
+        Optional<Admin> findAdmin = adminRepository.findByAdmId(adminId);
+        log.info("Adimn : " + findAdmin);
+        return findAdmin.map(AdminDto::new)
+            .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching AdminId in the database for " + adminId));
     }
+
 
     /**
      * Finds a admin in the database by admin no
      * @param adminNo
      * @return
      */
-    public Admin findByAdmNo(Long adminNo) {
-        return adminRepository.findByAdmNo(adminNo);
+    public AdminDto findByAdmNo(Long adminNo) {
+        Optional<Admin> findAdmin = adminRepository.findByAdmNo(adminNo);
+        return findAdmin.map(AdminDto::new)
+            .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user id in the database for " + adminNo));
     }
 
     /**

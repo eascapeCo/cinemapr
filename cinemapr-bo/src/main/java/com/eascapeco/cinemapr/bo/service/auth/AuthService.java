@@ -1,6 +1,5 @@
 package com.eascapeco.cinemapr.bo.service.auth;
 
-import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
@@ -43,21 +42,12 @@ public class AuthService {
         return jwtAuthenticationResponse;
     }
 
-    public Admin findByAdmId(String username, String password) {
-        Admin findAdmin = boAdminService.findByAdmId(username);
-        if (!passwordEncoder.matches(password, findAdmin.getPwd())) {
+    public AdminDto findByAdmId(String username, String password) {
+        AdminDto adminDto = boAdminService.loadUserByUsername(username);
+        if (!passwordEncoder.matches(password, adminDto.getPassword())) {
             throw new BadCredentialsException("Invalid Username or Password");
         }
-
-        return findAdmin;
+        return adminDto;
     }
 
-    /**
-     * Finds a admin in the database by admin no
-     * @param adminNo
-     * @return
-     */
-    public Admin findByAdmNo(Long adminNo) {
-        return boAdminService.findByAdmNo(adminNo);
-    }
 }

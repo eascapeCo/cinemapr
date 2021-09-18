@@ -7,9 +7,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -86,16 +85,6 @@ public class JwtTokenProvider implements Serializable {
     }
 
     /**
-     * JWT 토큰으로 인증 정보를 조회
-     *
-     * @param token
-     * @return
-     */
-    public Authentication getAuthentication(String token) {
-        return new UsernamePasswordAuthenticationToken(null, "", null);
-    }
-
-    /**
      * JWT 토큰 생성 시작
      *
      * @param chkAdm
@@ -103,10 +92,10 @@ public class JwtTokenProvider implements Serializable {
      */
     @Transactional
     public String generateToken(AdminDto chkAdm) {
-        List authorityList = chkAdm.getAuthorities()
+        String authorityList = chkAdm.getAuthorities()
             .stream()
             .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList());
+            .collect(Collectors.joining(","));
 
         return Jwts.builder().setSubject(chkAdm.getAdmNo().toString())
             .claim("authorities", authorityList)
@@ -161,7 +150,9 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     public List<GrantedAuthority> getAuthorityListFromToken(String token) {
-        return (List<GrantedAuthority>) getClaimFromToken(token).get("authorities");
+        return Arrays.stream(getClaimFromToken(token).get("authorities").toString().split(","))
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
 
     }
 

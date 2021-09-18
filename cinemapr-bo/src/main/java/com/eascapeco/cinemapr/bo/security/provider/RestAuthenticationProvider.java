@@ -1,6 +1,5 @@
 package com.eascapeco.cinemapr.bo.security.provider;
 
-import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
@@ -30,18 +29,10 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         log.info("authentication id : {}, pwd : {}", username, password);
+        AdminDto adminDto = authService.findByAdmId(username, password);
 
-        Admin admin = authService.findByAdmId(username, password);
-
-        AdminDto account = new AdminDto();
-        account.setAdmId(admin.getAdmId());
-//        account.setPwd(admin.getPwd());
-        account.setAdmNo(admin.getAdmNo());
-        account.setAdminRole(admin.getRoleList());
-
-        return new AjaxAuthenticationToken(account, account.getPassword(), account.getAuthorities());
+        return new AjaxAuthenticationToken(adminDto, adminDto.getPassword(), adminDto.getAuthorities());
     }
 
     @Override

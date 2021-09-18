@@ -1,49 +1,38 @@
 package com.eascapeco.cinemapr.bo.model.dto;
 
-import com.eascapeco.cinemapr.api.model.entity.AdminRole;
-import lombok.*;
+import com.eascapeco.cinemapr.api.model.entity.Admin;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter @Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@ToString
-public class AdminDto implements UserDetails {
+public class AdminDto extends Admin implements UserDetails {
 
-    private Long admNo;
-    private String admId;
-    private String pwd;
-    private List<AdminRole> adminRole;
-    private Collection<GrantedAuthority> authorities;
-    private LocalDateTime regDate;
-    private Long regNo;
-    private LocalDateTime modDate;
-    private Long modNo;
-    private Boolean useYn;
-    private Boolean pwdExpd;
+    public AdminDto(final Admin admin) {
+        super(admin);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities = adminRole.stream()
+        return getAdminRoles().stream()
             .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getRolNm()))
             .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return this.pwd;
+        return getPwd();
     }
 
     @Override
     public String getUsername() {
-        return this.admId;
+        return getAdmId();
     }
 
     @Override

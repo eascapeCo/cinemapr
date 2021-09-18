@@ -27,8 +27,8 @@ public class UrlSecurityMetadataSource implements FilterInvocationSecurityMetada
         requestMap.put(new AntPathRequestMatcher("/api/menus"), List.of(new SecurityConfig("ROLE_ADMIN")));
         // requestMap.put(new AntPathRequestMatcher("/api/menus/**"), List.of(new SecurityConfig("ROLE_MANAGER")));
         requestMap.put(new AntPathRequestMatcher("/api/menus/excel"), List.of(new SecurityConfig("ROLE_ADMIN")));
-        requestMap.put(new AntPathRequestMatcher("/api/menus/**"), List.of(new SecurityConfig("ROLE_MANAGER")));
-        // requestMap.put(new AntPathRequestMatcher("/sample/sample-editor"), List.of(new SecurityConfig("ROLE_MANAGER")));
+//        requestMap.put(new AntPathRequestMatcher("/api/menus/**"), List.of(new SecurityConfig("ROLE_MANAGER")));
+//         requestMap.put(new AntPathRequestMatcher("/sample/sample-editor"), List.of(new SecurityConfig("ROLE_MANAGER")));
     }
 
     @Override
