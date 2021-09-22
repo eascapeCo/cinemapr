@@ -2,6 +2,7 @@ package com.eascapeco.cinemapr.bo.model.dto;
 
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.entity.AdminRole;
+import io.netty.util.internal.StringUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -40,9 +44,14 @@ public class AdminDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getAdminRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getRolNm()))
-                        .collect(Collectors.toList());
+        if (!getAdminRoles().isEmpty()) {
+            return getAdminRoles().stream()
+                .filter(Objects::nonNull)
+                .map(roles -> new SimpleGrantedAuthority("ROLE_".concat(roles.getRole().getRolNm())))
+                .collect(Collectors.toList());
+        } else {
+            return getAuthorities();
+        }
     }
 
     @Override
