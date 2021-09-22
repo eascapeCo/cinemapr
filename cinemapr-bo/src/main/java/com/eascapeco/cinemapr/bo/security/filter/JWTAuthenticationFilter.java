@@ -1,11 +1,11 @@
 package com.eascapeco.cinemapr.bo.security.filter;
 
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
+import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -36,14 +36,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             log.info("jwtToken: {}", jwtToken);
 
             if (StringUtils.hasText(jwtToken) && jwtTokenProvider.validateToken(jwtToken)) {
-                Long adminNo = jwtTokenProvider.getAdminNoFromToken(jwtToken);
-                AdminDto adminDto = boAdminService.findByAdmNo(adminNo);
-                List<GrantedAuthority> authorityList = jwtTokenProvider.getAuthorityListFromToken(jwtToken);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(adminDto, jwtToken, authorityList);
+                AdminDto adminDto = jwtTokenProvider.getAdminDtoFromToken(jwtToken);
+                AjaxAuthenticationToken authentication = new AjaxAuthenticationToken(adminDto, null, jwtTokenProvider.getAuthorityListFromToken(jwtToken));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
         } catch (Exception e) {
             log.error("Failed to set user authentication in security context: ", e);
             throw e;
