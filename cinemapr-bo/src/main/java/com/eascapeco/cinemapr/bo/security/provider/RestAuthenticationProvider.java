@@ -29,7 +29,6 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.info("authentication id : {}, pwd : {}", username, password);
         AdminDto adminDto = authService.findByAdmId(username, password);
 
         return new AjaxAuthenticationToken(adminDto, adminDto.getPassword(), adminDto.getAuthorities());

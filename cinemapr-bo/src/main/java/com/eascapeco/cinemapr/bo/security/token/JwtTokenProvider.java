@@ -230,11 +230,4 @@ public class JwtTokenProvider implements Serializable {
         return Long.toString(Math.abs(getClaimFromToken(token).getExpiration().getTime() - new Date(System.currentTimeMillis()).getTime() - 1000));
     }
 
-    public AdminDto getAdminDtoFromToken(String jwtToken) {
-        AdminDto adminDto = new AdminDto();
-        adminDto.setAdmNo(getAdminNoFromToken(jwtToken));
-        adminDto.setAuthorities(getAuthorityListFromToken(jwtToken));
-
-        return adminDto;
-    }
 }
