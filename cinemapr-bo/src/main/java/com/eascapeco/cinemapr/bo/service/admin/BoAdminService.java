@@ -30,7 +30,6 @@ public class BoAdminService implements UserDetailsService {
     @Override
     public AdminDto loadUserByUsername(String adminId) throws UsernameNotFoundException {
         Optional<Admin> findAdmin = adminRepository.findByAdmId(adminId);
-        log.info("Adimn : " + findAdmin);
         return findAdmin.map(AdminDto::new)
             .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching AdminId in the database for " + adminId));
     }
@@ -43,7 +42,8 @@ public class BoAdminService implements UserDetailsService {
      */
     public AdminDto findByAdmNo(Long adminNo) {
         Optional<Admin> findAdmin = adminRepository.findByAdmNo(adminNo);
-        return findAdmin.map(AdminDto::new)
+        return findAdmin
+            .map(AdminDto::new)
             .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user id in the database for " + adminNo));
     }
 

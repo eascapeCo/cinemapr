@@ -1,27 +1,47 @@
 package com.eascapeco.cinemapr.bo.model.dto;
 
 import com.eascapeco.cinemapr.api.model.entity.Admin;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.eascapeco.cinemapr.api.model.entity.AdminRole;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
-@AllArgsConstructor
-public class AdminDto extends Admin implements UserDetails {
+@Getter @Setter
+@NoArgsConstructor
+public class AdminDto implements UserDetails {
 
-    public AdminDto(final Admin admin) {
-        super(admin);
+    private Long admNo;
+    private String admId;
+    private String pwd;
+    private List<AdminRole> adminRoles;
+    private Boolean useYn;
+    private Boolean pwdExpd;
+    private Collection<GrantedAuthority> authorities;
+
+    public AdminDto(Admin admin) {
+        admNo = admin.getAdmNo();
+        admId = admin.getAdmId();
+        pwd = admin.getPwd();
+        adminRoles = admin.getAdminRoles();
+        useYn = admin.getUseYn();
+        pwdExpd = admin.getPwdExpd();
+    }
+
+    public AdminDto(Long admNo) {
+        this.admNo = admNo;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getAdminRoles().stream()
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getRolNm()))
+            .map(roles -> new SimpleGrantedAuthority("ROLE_".concat(roles.getRole().getRolNm())))
             .collect(Collectors.toList());
     }
 
@@ -47,12 +67,12 @@ public class AdminDto extends Admin implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return getPwdExpd();
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return getUseYn();
     }
 
 }
