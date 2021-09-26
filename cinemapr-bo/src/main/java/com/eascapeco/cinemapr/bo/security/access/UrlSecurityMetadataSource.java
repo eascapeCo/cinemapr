@@ -2,6 +2,7 @@ package com.eascapeco.cinemapr.bo.security.access;
 
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;

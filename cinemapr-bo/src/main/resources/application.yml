@@ -26,8 +26,8 @@ spring:
     database-platform: org.hibernate.dialect.MariaDB103Dialect
   redis:
     host: ENC(A6gxzk8z82nukIaLbK+x7TsbwK1M4suhKD0W3UEROJGM+nLMLX1tNg==)
-    port: ENC(Nm+MKJW+NwRKUHv4lc3hog==)
-    password: ENC(YhGBxrG6usLq1QJ68edEEEDunMX9DGxK)
+    port: 12003
+    password: ENC(b7dUKiZI/MgWAVru//EbNXaNfRsvUmqM)
 logging.level:
   org.hibernate.SQL: debug
   #org.hibernate.type: trace

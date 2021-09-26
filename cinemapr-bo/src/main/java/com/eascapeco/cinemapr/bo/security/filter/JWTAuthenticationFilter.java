@@ -3,7 +3,10 @@ package com.eascapeco.cinemapr.bo.security.filter;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
+<<<<<<< HEAD
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
+=======
+>>>>>>> 42de0ea89466bf5447e26f11a191e882ecc778d8
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +30,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private String tokenRequestHeader = "Authorization";
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthService authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
