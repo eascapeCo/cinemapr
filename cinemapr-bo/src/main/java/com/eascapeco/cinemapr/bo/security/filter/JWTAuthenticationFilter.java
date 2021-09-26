@@ -1,12 +1,13 @@
 package com.eascapeco.cinemapr.bo.security.filter;
 
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
+import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
-import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
+import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
@@ -26,7 +27,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private String tokenRequestHeader = "Authorization";
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final BoAdminService boAdminService;
+    private final AuthService authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -37,19 +38,23 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwtToken) && jwtTokenProvider.validateToken(jwtToken)) {
                 Long adminNo = jwtTokenProvider.getAdminNoFromToken(jwtToken);
-                AdminDto adminDto = boAdminService.findByAdmNo(adminNo);
+                log.info("adminNo: {}", adminNo);
+                jwtTokenProvider.getAuthorityListFromToken(jwtToken);
                 List<GrantedAuthority> authorityList = jwtTokenProvider.getAuthorityListFromToken(jwtToken);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(adminDto, jwtToken, authorityList);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                AdminDto adminDto = new AdminDto();
+                adminDto.setAdmNo(adminNo);
+                AjaxAuthenticationToken ajaxAuthenticationToken = new AjaxAuthenticationToken(adminDto, null, authorityList);
+                ajaxAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(ajaxAuthenticationToken);
             }
 
         } catch (Exception e) {
             log.error("Failed to set user authentication in security context: ", e);
             throw e;
-        } finally {
-            filterChain.doFilter(request, response);
         }
+
+        filterChain.doFilter(request, response);
+
     }
 
 
