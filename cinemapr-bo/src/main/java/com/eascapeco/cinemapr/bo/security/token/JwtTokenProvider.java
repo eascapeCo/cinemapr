@@ -1,7 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.token;
 
 import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
-import com.eascapeco.cinemapr.api.model.entity.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -103,21 +102,6 @@ public class JwtTokenProvider implements Serializable {
             .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_TOKEN_EXP).toInstant()))
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
-    }
-
-    /**
-     * JWT 토큰 생성 시작
-     *
-     * @param chkAdm
-     * @return
-     */
-    public RefreshToken genRefreshToken(AdminDto chkAdm) {
-
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken(refreshJwtToken(chkAdm));
-        refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + JWT_REFRESH_TOKEN_EXP));
-
-        return refreshToken;
     }
 
     /**

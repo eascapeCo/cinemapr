@@ -1,11 +1,14 @@
 package com.eascapeco.cinemapr.bo.security.handler;
 
+import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -21,12 +24,20 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
     private final AuthService authService;
     private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         AdminDto adminDto = (AdminDto) authentication.getPrincipal();
         JwtAuthenticationResponse jwtAuthenticationResponse = authService.createTokenByLogin(adminDto);
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setAdmNo(adminDto.getAdmNo());
+        refreshToken.setRefreshToken(jwtAuthenticationResponse.getRefreshToken());
+
+        ValueOperations<String, Object> vop = redisTemplate.opsForValue();
+        vop.set(adminDto.getUsername(), refreshToken);
 
         try {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
