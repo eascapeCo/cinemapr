@@ -37,7 +37,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
         refreshToken.setRefreshToken(jwtAuthenticationResponse.getRefreshToken());
 
         String uuid = redisService.pushByRefreshToken(adminDto, refreshToken);
-        CookieUtils.setCookie(uuid, refreshToken.getRefreshToken(), 7 * 24 * 60 * 60, response);
+        CookieUtils.setCookie("uid", uuid, 7 * 24 * 60 * 60, response);
 
         try {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
