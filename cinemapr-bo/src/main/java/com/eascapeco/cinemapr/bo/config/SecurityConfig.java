@@ -12,12 +12,12 @@ import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationSuccessHandl
 import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
+import com.eascapeco.cinemapr.bo.service.redis.RedisService;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthService authService;
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;
 
     private final SecurityResourceService securityResourceService;
 
@@ -98,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler restAuthenticationSuccessHandler() {
-        return new RestAuthenticationSuccessHandler(authService, objectMapper, redisTemplate);
+        return new RestAuthenticationSuccessHandler(authService, objectMapper, redisService);
     }
 
     @Bean
