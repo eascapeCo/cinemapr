@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,8 +41,9 @@ public class BoAdminService implements UserDetailsService {
      * @param adminNo
      * @return
      */
-    public AdminDto findByAdmNo(Long adminNo) {
-        Optional<Admin> findAdmin = adminRepository.findByAdmNo(adminNo);
+    @Transactional
+    public AdminDto findById(Long adminNo) {
+        Optional<Admin> findAdmin = adminRepository.findById(adminNo);
         return findAdmin.map(AdminDto::new)
             .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user id in the database for " + adminNo));
     }

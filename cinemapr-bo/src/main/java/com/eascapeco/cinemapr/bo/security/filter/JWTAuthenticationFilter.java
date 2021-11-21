@@ -59,7 +59,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             RefreshToken refreshToken = jwtTokenProvider.getRefreshToken(request);
             log.info("token {} : ", refreshToken.getRefreshToken());
             if (!jwtTokenProvider.isTokenExpired(refreshToken.getRefreshToken())) {
-                AdminDto adminDto = boAdminService.findByAdmNo(refreshToken.getAdmNo());
+                AdminDto adminDto = boAdminService.findById(refreshToken.getAdmNo());
                 JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(refreshToken.getRefreshToken(), adminDto);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.getWriter().write(objectMapper.writeValueAsString(jwtAuthenticationResponse));
