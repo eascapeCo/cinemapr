@@ -11,6 +11,7 @@ import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationFailureHandl
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationSuccessHandler;
 import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
+import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import com.eascapeco.cinemapr.bo.service.redis.RedisService;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
@@ -50,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String[] permitAllPattern = { "/login", "/", "/js/**" };
 
     private final AuthService authService;
+    private final BoAdminService boAdminService;
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
@@ -108,7 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter(jwtTokenProvider);
+        return new JWTAuthenticationFilter(jwtTokenProvider, objectMapper, boAdminService);
     }
 
     @Bean

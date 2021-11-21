@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Getter @Setter
 @NoArgsConstructor
 public class AdminDto implements UserDetails {
-
     private Long admNo;
     private String admId;
     private String pwd;

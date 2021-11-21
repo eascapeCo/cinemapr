@@ -1,7 +1,11 @@
 package com.eascapeco.cinemapr.bo.security.token;
 
 import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
+import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
+import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
+import com.eascapeco.cinemapr.bo.service.redis.RedisService;
+import com.eascapeco.cinemapr.bo.util.CookieUtils;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -9,11 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,8 +31,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class JwtTokenProvider implements Serializable {
 
-    static final long JWT_TOKEN_EXP = (60 * 1 * 1000); // 30 mins
-    static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24 * 1000); // 30 days
+    static final long JWT_TOKEN_EXP = (60 * 1); // 30 mins
+    static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24); // 30 days
+
+    private final RedisService redisService;
+
+    public JwtTokenProvider(RedisService redisService) {
+        this.redisService = redisService;
+    }
 
     byte[] byteKeys;
 
@@ -111,8 +125,8 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     public Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        final LocalDate expiration = getExpirationDateFromToken(token);
+        return expiration.isBefore(LocalDate.now());
     }
 
     /**
@@ -155,10 +169,11 @@ public class JwtTokenProvider implements Serializable {
      * @param token
      * @return
      */
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token).getExpiration();
+    public LocalDate getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token).getExpiration().toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
     }
-
 
     public Claims getClaimFromToken(String token) {
         return getAllClaimsFromToken(token);
@@ -197,7 +212,6 @@ public class JwtTokenProvider implements Serializable {
 
         } catch (ExpiredJwtException ex) {
             log.error("Expired JWT token");
-            throw new InvalidTokenRequestException("JWT", authToken, "Token expired. Refresh required");
 
         } catch (UnsupportedJwtException ex) {
             log.error("Unsupported JWT token");
@@ -210,8 +224,16 @@ public class JwtTokenProvider implements Serializable {
         return true;
     }
 
-    public String getExpiresIn(String token) {
-        return Long.toString(Math.abs(getClaimFromToken(token).getExpiration().getTime() - new Date(System.currentTimeMillis()).getTime() - 1000));
+    public RefreshToken getRefreshToken(HttpServletRequest request) {
+        RefreshToken refreshToken = (RefreshToken) redisService.getValue(CookieUtils.getCookie("uid", request));
+        return refreshToken;
     }
 
+    public JwtAuthenticationResponse getJwtAuthenticationResponse(String refreshToken, AdminDto adminDto) {
+        String accessToken = generateToken(adminDto);
+        refreshToken = StringUtils.hasText(refreshToken) ? refreshToken : refreshJwtToken(adminDto);
+        LocalDate expiryDuration = getExpirationDateFromToken(accessToken);
+
+        return new JwtAuthenticationResponse(accessToken, refreshToken, expiryDuration);
+    }
 }

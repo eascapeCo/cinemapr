@@ -5,7 +5,6 @@ import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import com.eascapeco.cinemapr.bo.service.redis.RedisService;
-import com.eascapeco.cinemapr.bo.util.CookieUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +35,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
         refreshToken.setAdmNo(adminDto.getAdmNo());
         refreshToken.setRefreshToken(jwtAuthenticationResponse.getRefreshToken());
 
-        String uuid = redisService.pushByRefreshToken(adminDto, refreshToken);
-        CookieUtils.setCookie("uid", uuid, 7 * 24 * 60 * 60, response);
+        redisService.pushByRefreshToken(adminDto, refreshToken, response);
 
         try {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
