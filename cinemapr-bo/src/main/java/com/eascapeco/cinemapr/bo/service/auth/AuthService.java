@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 
 /**
  * 관리자 service
@@ -30,15 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public JwtAuthenticationResponse createTokenByLogin(AdminDto adminDto) {
-//        Refresh Token 확인하는 로직 추가해야됨
-
-        String refreshToken = jwtTokenProvider.refreshJwtToken(adminDto);
-        String accessToken = jwtTokenProvider.generateToken(adminDto);
-        Date expiryDuration = jwtTokenProvider.getExpirationDateFromToken(accessToken);
-
-        JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(accessToken, refreshToken, expiryDuration);
-
-//        refreshToken = refreshTokenService.save(refreshToken);
+        JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(null, adminDto);
         return jwtAuthenticationResponse;
     }
 

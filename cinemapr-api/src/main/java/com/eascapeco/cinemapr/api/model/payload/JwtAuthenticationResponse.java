@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter @Setter
 @RequiredArgsConstructor
@@ -28,6 +28,6 @@ public class JwtAuthenticationResponse implements Serializable {
 
     private final String refreshToken;
 
-    private final Date expiryDuration;
+    private final LocalDate expiryDuration;
 
 }

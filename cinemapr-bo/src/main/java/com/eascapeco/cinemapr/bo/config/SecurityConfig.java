@@ -11,13 +11,14 @@ import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationFailureHandl
 import com.eascapeco.cinemapr.bo.security.handler.RestAuthenticationSuccessHandler;
 import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
+import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
+import com.eascapeco.cinemapr.bo.service.redis.RedisService;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -50,9 +51,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String[] permitAllPattern = { "/login", "/", "/js/**" };
 
     private final AuthService authService;
+    private final BoAdminService boAdminService;
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;
 
     private final SecurityResourceService securityResourceService;
 
@@ -98,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler restAuthenticationSuccessHandler() {
-        return new RestAuthenticationSuccessHandler(authService, objectMapper, redisTemplate);
+        return new RestAuthenticationSuccessHandler(authService, objectMapper, redisService);
     }
 
     @Bean
@@ -108,7 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter(jwtTokenProvider);
+        return new JWTAuthenticationFilter(jwtTokenProvider, objectMapper, boAdminService);
     }
 
     @Bean

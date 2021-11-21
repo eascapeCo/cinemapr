@@ -42,8 +42,7 @@ public class BoAdminService implements UserDetailsService {
      */
     public AdminDto findByAdmNo(Long adminNo) {
         Optional<Admin> findAdmin = adminRepository.findByAdmNo(adminNo);
-        return findAdmin
-            .map(AdminDto::new)
+        return findAdmin.map(AdminDto::new)
             .orElseThrow(() -> new UsernameNotFoundException("Couldn't find a matching user id in the database for " + adminNo));
     }
 
