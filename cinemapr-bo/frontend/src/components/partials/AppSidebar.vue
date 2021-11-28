@@ -91,14 +91,19 @@
 export default {
   name: 'AppSidebar',
   created () {
-    this.$axios.get('/api/menus').then((res) => {
-      this.menus = res.data
-      // this.confirm()
-      // if (this.$alert('만료시간이 지났습니다. 로그인페이지로 이동합니다')) {
-    }).catch(err => {
-      console.error(err)
-      this.invalidTkn()
-    })
+    const config = {
+      headers: {
+        Authorization: this.$store.state.access_token,
+        'Content-Type': 'application/json'
+      }
+    }
+    this.$axios.get('/api/menus', config)
+      .then((res) => {
+        this.menus = res.data
+      }).catch(err => {
+        console.error(err)
+        this.invalidTkn()
+      })
   },
   data: () => ({
     menus: [],

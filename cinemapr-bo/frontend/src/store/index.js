@@ -35,6 +35,7 @@ export default new Vuex.Store({
 
       state.access_token = data.accessToken
       state.refresh_token = data.refreshToken
+      state.expires_in = data.expiryDuration
 
       sessionStorage.setItem('access_token', data.accessToken)
       sessionStorage.setItem('refresh_token', data.refreshToken)
@@ -71,15 +72,16 @@ export default new Vuex.Store({
           method: 'post',
           url: '/api/login',
           data: {
-            username: id,
-            password: pwd
+            admId: id,
+            pwd: pwd
           }
         })
           .then((res) => {
             if (res.status === 200) {
               commit('LOGIN_SUCCESS', {
-                accessToken: 'Bearer ' + res.data.access_token,
-                refreshToken: 'Bearer ' + res.data.refresh_token
+                accessToken: 'Bearer ' + res.data.accessToken,
+                refreshToken: 'Bearer ' + res.data.refreshToken,
+                expiryDuration: res.data.expiryDuration
               })
             }
             resolve(res)
