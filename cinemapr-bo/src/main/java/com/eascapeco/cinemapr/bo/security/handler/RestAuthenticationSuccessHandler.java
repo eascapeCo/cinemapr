@@ -28,11 +28,9 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         AdminDto adminDto = (AdminDto) authentication.getPrincipal();
-        JwtAuthenticationResponse jwtAuthenticationResponse = authService.createTokenByLogin(adminDto);
+        JwtAuthenticationResponse jwtAuthenticationResponse = authService.createAccessTokenByLogin(adminDto);
 
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setAdmNo(adminDto.getAdmNo());
-        refreshToken.setRefreshToken(jwtAuthenticationResponse.getRefreshToken());
+        RefreshToken refreshToken = authService.createRefreshTokenByLogin(adminDto);
 
         redisService.pushByRefreshToken(adminDto, refreshToken, response);
 

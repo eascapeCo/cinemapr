@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +83,7 @@ public class JwtTokenProvider implements Serializable {
      * @param chkAdm
      * @return Optional
      */
-    public String refreshJwtToken(AdminDto chkAdm) {
+    public String generateRefreshToken(AdminDto chkAdm) {
         Map<String, Object> map = new HashMap<>();
         return Jwts.builder().setClaims((Claims) new HashMap<>().put("admNo", chkAdm.getAdmNo()))
                              .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
@@ -116,7 +115,7 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     @Transactional
-    public String generateToken(AdminDto chkAdm) {
+    public String generateAccessToken(AdminDto chkAdm) {
         List authorityList = chkAdm.getAuthorities()
             .stream()
             .map(GrantedAuthority::getAuthority)
@@ -242,11 +241,10 @@ public class JwtTokenProvider implements Serializable {
         return refreshToken;
     }
 
-    public JwtAuthenticationResponse getJwtAuthenticationResponse(String refreshToken, AdminDto adminDto) {
-        String accessToken = generateToken(adminDto);
-        refreshToken = StringUtils.hasText(refreshToken) ? refreshToken : refreshJwtToken(adminDto);
+    public JwtAuthenticationResponse getJwtAuthenticationResponse(AdminDto adminDto) {
+        String accessToken = generateAccessToken(adminDto);
         LocalDate expiryDuration = getExpirationDateFromToken(accessToken);
 
-        return new JwtAuthenticationResponse(accessToken, refreshToken, expiryDuration);
+        return new JwtAuthenticationResponse(accessToken, expiryDuration);
     }
 }

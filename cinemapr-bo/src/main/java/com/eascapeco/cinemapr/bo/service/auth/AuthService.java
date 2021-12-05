@@ -1,6 +1,7 @@
 package com.eascapeco.cinemapr.bo.service.auth;
 
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
+import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
@@ -28,9 +29,17 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public JwtAuthenticationResponse createTokenByLogin(AdminDto adminDto) {
-        JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(null, adminDto);
+    public JwtAuthenticationResponse createAccessTokenByLogin(AdminDto adminDto) {
+        JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(adminDto);
         return jwtAuthenticationResponse;
+    }
+
+    public RefreshToken createRefreshTokenByLogin(AdminDto adminDto) {
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setRefreshToken(jwtTokenProvider.generateRefreshToken(adminDto));
+        refreshToken.setAdmNo(adminDto.getAdmNo());
+
+        return refreshToken;
     }
 
     public AdminDto findByAdmId(String username, String password) {

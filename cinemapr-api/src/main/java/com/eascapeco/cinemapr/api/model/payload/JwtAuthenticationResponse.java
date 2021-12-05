@@ -26,8 +26,6 @@ public class JwtAuthenticationResponse implements Serializable {
 
     private final String accessToken;
 
-    private final String refreshToken;
-
     private final LocalDate expiryDuration;
 
 }

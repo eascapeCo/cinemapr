@@ -60,7 +60,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             log.info("token {} : ", refreshToken.getRefreshToken());
             if (!jwtTokenProvider.isTokenExpired(refreshToken.getRefreshToken())) {
                 AdminDto adminDto = boAdminService.findById(refreshToken.getAdmNo());
-                JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(refreshToken.getRefreshToken(), adminDto);
+                JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(adminDto);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.getWriter().write(objectMapper.writeValueAsString(jwtAuthenticationResponse));
             }
