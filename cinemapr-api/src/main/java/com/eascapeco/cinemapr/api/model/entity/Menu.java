@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Menu extends BaseEntity {
+    private static final List<String> menuTypes = List.of("siblingLevel", "subLevel");
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mnuNo;
