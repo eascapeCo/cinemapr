@@ -2,6 +2,7 @@ package com.eascapeco.cinemapr.bo.model.dto;
 
 import com.eascapeco.cinemapr.api.model.entity.Admin;
 import com.eascapeco.cinemapr.api.model.entity.AdminRole;
+import com.eascapeco.cinemapr.api.model.entity.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,15 +23,19 @@ public class AdminDto implements UserDetails {
     private List<AdminRole> adminRoles;
     private Boolean useYn;
     private Boolean pwdExpd;
-    private Collection<GrantedAuthority> authorities;
+    private Collection<SimpleGrantedAuthority> authorities;
 
     public AdminDto(Admin admin) {
         admNo = admin.getAdmNo();
         admId = admin.getAdmId();
         pwd = admin.getPwd();
-        adminRoles = admin.getAdminRoles();
         useYn = admin.getUseYn();
         pwdExpd = admin.getPwdExpd();
+        authorities = admin.getAdminRoles().stream()
+            .map(AdminRole::getRole)
+            .map(Role::getRolNm)
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
     }
 
     public AdminDto(Long admNo) {
@@ -39,9 +44,7 @@ public class AdminDto implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getAdminRoles().stream()
-            .map(roles -> new SimpleGrantedAuthority("ROLE_".concat(roles.getRole().getRolNm())))
-            .collect(Collectors.toList());
+        return this.authorities;
     }
 
     @Override

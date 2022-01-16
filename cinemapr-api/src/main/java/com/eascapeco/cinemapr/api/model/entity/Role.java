@@ -20,6 +20,6 @@ public class Role extends BaseEntity {
     private String rolDesc;
 
     @OneToMany(mappedBy = "role")
-    private List<AdminRole> roleList = new ArrayList<>();
+    private List<AdminRole> adminRoles = new ArrayList<>();
 
 }

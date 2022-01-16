@@ -29,6 +29,7 @@ public class BoAdminService implements UserDetailsService {
      * @return
      */
     @Override
+    @Transactional
     public AdminDto loadUserByUsername(String adminId) throws UsernameNotFoundException {
         Optional<Admin> findAdmin = adminRepository.findByAdmId(adminId);
         return findAdmin.map(AdminDto::new)

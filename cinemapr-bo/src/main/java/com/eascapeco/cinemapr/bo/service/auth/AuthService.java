@@ -22,7 +22,6 @@ import javax.transaction.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class AuthService {
 
     private final BoAdminService boAdminService;

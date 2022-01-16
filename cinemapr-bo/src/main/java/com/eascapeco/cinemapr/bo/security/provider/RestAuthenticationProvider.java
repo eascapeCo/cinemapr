@@ -19,7 +19,6 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
     private final AuthService authService;
 
     @Override
-    @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         if (authentication == null) {

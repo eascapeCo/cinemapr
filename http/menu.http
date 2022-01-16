@@ -1,2 +1,13 @@
 ###
 POST {{host}}/api/menus
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiYXV0aG9yaXRpZXMiOlsiQURNSU4iLCJNQU5BR0VSIiwiUk9MRV9NQU5BR0VSIl0sImlhdCI6MTY0MjMxNjg5NywiZXhwIjoxNjQyMzE2OTU3fQ.bvDHvxxcSq2aSsjVCYY1ca6Jfa4VXlQUSAj00Uk39_s
+
+###
+POST {{host}}/api/login
+Content-Type: application/json
+
+{
+  "admId": "admin",
+  "pwd": 1234
+}

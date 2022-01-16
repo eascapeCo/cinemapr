@@ -7,7 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity(name = "adm_role")
+@Entity
 @IdClass(AdminRoleId.class)
 @Getter @Setter
 public class AdminRole implements Serializable {

@@ -11,7 +11,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @Query("select m from Menu m where m.useYn = true " +
         "and m.dpYn = true " +
-        "and exists (select mr from MenuRole mr where mr.rolNo in (select ar.rolNo from adm_role ar where ar.rolNo = :admNo)" +
+        "and exists (select mr from MenuRole mr where mr.rolNo in (select ar.rolNo from AdminRole ar where ar.rolNo = :admNo)" +
         "and mr.mnuNo = m.mnuNo)" +
         "order by m.dpNo, m.parentMenu.mnuNo")
     List<Menu> findAllMenus(@Param("admNo") Long id);
