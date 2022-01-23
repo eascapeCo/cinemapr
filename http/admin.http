@@ -1,0 +1,8 @@
+###
+POST {{host}}/api/login
+Content-Type: application/json
+
+{
+  "admId": "admin",
+  "pwd": 1234
+}

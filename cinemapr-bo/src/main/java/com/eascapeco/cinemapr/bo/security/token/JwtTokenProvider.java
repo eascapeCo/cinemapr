@@ -1,11 +1,9 @@
 package com.eascapeco.cinemapr.bo.security.token;
 
-import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.service.redis.RedisService;
-import com.eascapeco.cinemapr.bo.util.CookieUtils;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -17,7 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -63,10 +60,10 @@ public class JwtTokenProvider implements Serializable {
     @Deprecated
     public String createJwtToken(Map<String, Object> map, AdminDto admin) {
         return Jwts.builder().setClaims(map)
-                   .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                   .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_TOKEN_EXP).toInstant()))
-                   .signWith(key, SignatureAlgorithm.HS256)
-                   .compact();
+            .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+            .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_TOKEN_EXP).toInstant()))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
 
         /*return JWT.create().withClaim("id", admin.getUsername())
                              .withClaim("admNo", admin.getAdmNo())
@@ -86,10 +83,10 @@ public class JwtTokenProvider implements Serializable {
     public String generateRefreshToken(AdminDto chkAdm) {
         Map<String, Object> map = new HashMap<>();
         return Jwts.builder().setClaims((Claims) new HashMap<>().put("admNo", chkAdm.getAdmNo()))
-                             .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-                             .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_REFRESH_TOKEN_EXP).toInstant()))
-                             .signWith(key, SignatureAlgorithm.HS256)
-                             .compact();
+            .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
+            .setExpiration(Date.from(ZonedDateTime.now().plusSeconds(JWT_REFRESH_TOKEN_EXP).toInstant()))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
 
         /*return JWT.create().withClaim("id", admin.getUsername())
                              .withIssuer("JaeHan")
@@ -155,7 +152,6 @@ public class JwtTokenProvider implements Serializable {
     }
 
     /**
-     *
      * @param token
      * @return
      */
@@ -200,7 +196,7 @@ public class JwtTokenProvider implements Serializable {
     public Claims getAllClaimsFromToken(String token) {
 
         return Jwts.parserBuilder().setSigningKey(key)
-                            .build().parseClaimsJws(token).getBody();
+            .build().parseClaimsJws(token).getBody();
     }
 
     /**
@@ -210,34 +206,42 @@ public class JwtTokenProvider implements Serializable {
      * - Token is supported
      * - Token has not recently been logged out.
      */
-    public boolean validateToken(String authToken) {
+    public TokenStatus validateToken(String authToken) {
+        TokenStatus tokenStatus;
+
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+            tokenStatus = TokenStatus.ACTIVE;
 
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature");
-            throw new InvalidTokenRequestException("JWT", authToken, "Incorrect signature");
+            tokenStatus = TokenStatus.INVALID;
+//            throw new InvalidTokenRequestException("JWT", authToken, "Incorrect signature");
 
         } catch (MalformedJwtException ex) {
             log.error("Invalid JWT token");
-            throw new InvalidTokenRequestException("JWT", authToken, "Malformed jwt token");
+            tokenStatus = TokenStatus.INVALID;
+//            throw new InvalidTokenRequestException("JWT", authToken, "Malformed jwt token");
 
         } catch (ExpiredJwtException ex) {
+            tokenStatus = TokenStatus.EXPIRED;
             log.error("Expired JWT token");
 
         } catch (UnsupportedJwtException ex) {
             log.error("Unsupported JWT token");
-            throw new InvalidTokenRequestException("JWT", authToken, "Unsupported JWT token");
+            tokenStatus = TokenStatus.INVALID;
+//            throw new InvalidTokenRequestException("JWT", authToken, "Unsupported JWT token");
 
         } catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty.");
-            throw new InvalidTokenRequestException("JWT", authToken, "Illegal argument token");
+            tokenStatus = TokenStatus.INVALID;
+//            throw new InvalidTokenRequestException("JWT", authToken, "Illegal argument token");
         }
-        return true;
+        return tokenStatus;
     }
 
-    public RefreshToken getRefreshToken(HttpServletRequest request) {
-        RefreshToken refreshToken = (RefreshToken) redisService.getValue(CookieUtils.getCookie("uid", request));
+    public RefreshToken getRefreshToken(String key) {
+        RefreshToken refreshToken = (RefreshToken) redisService.getValue(key);
         return refreshToken;
     }
 
