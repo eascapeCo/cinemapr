@@ -1,5 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.filter;
 
+import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
@@ -55,9 +56,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         } else if (tokenStatus == TokenStatus.EXPIRED) {
             RefreshToken refreshToken = jwtTokenProvider.getRefreshToken(CookieUtils.getCookie("uid", request));
 
-            TokenStatus refreshTokenStatus = jwtTokenProvider.validateToken(refreshToken.getRefreshToken());
-
-            if (refreshTokenStatus == TokenStatus.ACTIVE) {
+            if (jwtTokenProvider.validateToken(refreshToken.getRefreshToken()) == TokenStatus.ACTIVE) {
                 AdminDto adminDto = boAdminService.findById(refreshToken.getAdmNo());
                 JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(adminDto);
                 List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorityListFromToken(jwtAuthenticationResponse.getAccessToken());
@@ -66,10 +65,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 response.getWriter().write(objectMapper.writeValueAsString(jwtAuthenticationResponse));
 
                 setAuthentication(request, adminDto, authorities);
+
+            } else {
+                throw new InvalidTokenRequestException("RefreshToken", refreshToken.getRefreshToken(), "Expired Token");
             }
 
         } else {
-
+            throw new InvalidTokenRequestException("AccessToken", jwtToken, "Expired Token");
         }
 
         filterChain.doFilter(request, response);
