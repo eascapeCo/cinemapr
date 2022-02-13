@@ -47,7 +47,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String[] ignoredMatcherPattern = {"/api/login", "/js/**", "/**/favicon.ico" };
+    private final String[] ignoredMatcherPattern = {"/js/**", "/**/favicon.ico" };
     private final String[] permitAllPattern = { "/login", "/", "/js/**" };
 
     private final AuthService authService;
@@ -70,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling(exceptionHandling ->
             exceptionHandling.authenticationEntryPoint(new RestAuthenticationEntryPoint())
                             .accessDeniedHandler(jwtAccessDeniedHandler()));
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(restLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
