@@ -3,7 +3,7 @@ package com.eascapeco.cinemapr.bo.config;
 import com.eascapeco.cinemapr.bo.security.access.UrlSecurityMetadataSource;
 import com.eascapeco.cinemapr.bo.security.common.RestAuthenticationEntryPoint;
 import com.eascapeco.cinemapr.bo.security.factory.UrlResourcesMapFactoryBean;
-import com.eascapeco.cinemapr.bo.security.filter.JWTAuthenticationFilter;
+import com.eascapeco.cinemapr.bo.security.filter.JwtAuthenticationFilter;
 import com.eascapeco.cinemapr.bo.security.filter.PermitAllFilter;
 import com.eascapeco.cinemapr.bo.security.filter.RestLoginProcessingFilter;
 import com.eascapeco.cinemapr.bo.security.handler.JwtAccessDeniedHandler;
@@ -47,8 +47,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String[] ignoredMatcherPattern = {"/js/**", "/**/favicon.ico" };
-    private final String[] permitAllPattern = { "/login", "/", "/js/**" };
+    private final String[] ignoredMatcherPattern = {"/js/**", "/**/favicon.ico"};
+    private final String[] permitAllPattern = {"/api/login", "/", "/js/**"};
 
     private final AuthService authService;
     private final BoAdminService boAdminService;
@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(permitAllFilter(), FilterSecurityInterceptor.class);
         http.exceptionHandling(exceptionHandling ->
             exceptionHandling.authenticationEntryPoint(new RestAuthenticationEntryPoint())
-                            .accessDeniedHandler(jwtAccessDeniedHandler()));
+                .accessDeniedHandler(jwtAccessDeniedHandler()));
         http.addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(restLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -87,12 +87,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public RestLoginProcessingFilter restLoginProcessingFilter() throws Exception {
-        RestLoginProcessingFilter restLoginProcessingFilter =  new RestLoginProcessingFilter();
+        RestLoginProcessingFilter restLoginProcessingFilter = new RestLoginProcessingFilter();
         restLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
         restLoginProcessingFilter.setAuthenticationSuccessHandler(restAuthenticationSuccessHandler());
         restLoginProcessingFilter.setAuthenticationFailureHandler(restAuthenticationFailureHandler());
         return restLoginProcessingFilter;
     }
+
     @Bean
     public AuthenticationProvider restAuthenticationProvider() {
         return new RestAuthenticationProvider(authService);
@@ -109,8 +110,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter(jwtTokenProvider, objectMapper, boAdminService);
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider, boAdminService);
     }
 
     @Bean
@@ -122,6 +123,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         return permitAllFilter;
     }
+
     @Bean
     public AccessDecisionManager affirmativeBased() {
         return new AffirmativeBased(getAccessDecisionVoters());

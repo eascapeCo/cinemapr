@@ -4,19 +4,14 @@ import com.eascapeco.cinemapr.api.exception.InvalidTokenRequestException;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
-import com.eascapeco.cinemapr.bo.security.token.AjaxAuthenticationToken;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.security.token.TokenStatus;
 import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import com.eascapeco.cinemapr.bo.util.CookieUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,66 +20,51 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JWTAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String tokenRequestHeader = "Authorization";
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final  ObjectMapper objectMapper;
-
     private final BoAdminService boAdminService;
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String jwtToken = getAccessTokenFromRequest(request);
-        TokenStatus tokenStatus = StringUtils.hasText(jwtToken) ? jwtTokenProvider.validateToken(jwtToken) : TokenStatus.INVALID;
+        String accessToken = getAccessTokenFromRequest(request);
+        AdminDto adminDto = null;
 
+        TokenStatus tokenStatus = StringUtils.hasText(accessToken) ? jwtTokenProvider.validateToken(accessToken) : TokenStatus.INVALID;
         if (tokenStatus == TokenStatus.ACTIVE) {
-            AdminDto adminDto = new AdminDto();
-            adminDto.setAdmNo(jwtTokenProvider.getAdminNoFromToken(jwtToken));
-            List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorityListFromToken(jwtToken);
-
-            setAuthentication(request, adminDto, authorities);
+            adminDto = new AdminDto();
+            adminDto.setAdmNo(jwtTokenProvider.getAdminNoFromToken(accessToken));
+            this.setAuthentication(accessToken, adminDto);
 
         } else if (tokenStatus == TokenStatus.EXPIRED) {
             RefreshToken refreshToken = jwtTokenProvider.getRefreshToken(CookieUtils.getCookie("uid", request));
 
             if (jwtTokenProvider.validateToken(refreshToken.getRefreshToken()) == TokenStatus.ACTIVE) {
-                AdminDto adminDto = boAdminService.findById(refreshToken.getAdmNo());
-                JwtAuthenticationResponse jwtAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(adminDto);
-                List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorityListFromToken(jwtAuthenticationResponse.getAccessToken());
+                adminDto = boAdminService.findById(refreshToken.getAdmNo());
+                JwtAuthenticationResponse newAuthenticationResponse = jwtTokenProvider.getJwtAuthenticationResponse(adminDto);
+                jwtTokenProvider.setHeaderAccessToken(response, newAuthenticationResponse);
 
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.getWriter().write(objectMapper.writeValueAsString(jwtAuthenticationResponse));
-
-                setAuthentication(request, adminDto, authorities);
+                setAuthentication(newAuthenticationResponse.getAccessToken(), adminDto);
 
             } else {
+                SecurityContextHolder.clearContext();
                 throw new InvalidTokenRequestException("RefreshToken", refreshToken.getRefreshToken(), "Expired Token");
             }
 
         } else {
-            throw new InvalidTokenRequestException("AccessToken", jwtToken, "Expired Token");
+            SecurityContextHolder.clearContext();
+            throw new InvalidTokenRequestException("AccessToken", accessToken, "Expired Token");
         }
 
         filterChain.doFilter(request, response);
-
     }
-
-    private void setAuthentication(HttpServletRequest request, AdminDto adminDto, List<GrantedAuthority> authorities) {
-        AjaxAuthenticationToken ajaxAuthenticationToken = new AjaxAuthenticationToken(adminDto, null, authorities);
-        ajaxAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(ajaxAuthenticationToken);
-    }
-
 
     /**
      * Extract the token from the Authorization request header
@@ -97,6 +77,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             return accessToken.replace("Bearer ", "");
         }
         return null;
+    }
+
+    private void setAuthentication(String token, AdminDto adminDto) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(token, adminDto);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 }

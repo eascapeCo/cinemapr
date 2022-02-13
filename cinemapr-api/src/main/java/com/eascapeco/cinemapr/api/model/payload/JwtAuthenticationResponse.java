@@ -18,14 +18,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
+@Setter
 @RequiredArgsConstructor
 public class JwtAuthenticationResponse implements Serializable {
 
     private final String accessToken;
 
-    private final LocalDate expiryDuration;
+    private final LocalDateTime expiryDuration;
 
 }

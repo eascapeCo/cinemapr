@@ -3,6 +3,7 @@ package com.eascapeco.cinemapr.bo.security.token;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
+import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import com.eascapeco.cinemapr.bo.service.redis.RedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -15,10 +16,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -29,10 +32,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class JwtTokenProvider implements Serializable {
 
-    static final long JWT_TOKEN_EXP = (60 * 1); // 30 mins
+    static final long JWT_TOKEN_EXP = (60 * 1) * 5; // 30 mins
     static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24); // 30 days
 
     private final RedisService redisService;
+    private BoAdminService boAdminService;
 
     public JwtTokenProvider(RedisService redisService) {
         this.redisService = redisService;
@@ -99,10 +103,11 @@ public class JwtTokenProvider implements Serializable {
      * JWT 토큰으로 인증 정보를 조회
      *
      * @param token
+     * @param adminDto
      * @return
      */
-    public Authentication getAuthentication(String token) {
-        return new UsernamePasswordAuthenticationToken(null, "", null);
+    public Authentication getAuthentication(String token, AdminDto adminDto) {
+        return new UsernamePasswordAuthenticationToken(adminDto, "", getAuthorityListFromToken(token));
     }
 
     /**
@@ -134,8 +139,8 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     public Boolean isTokenExpired(String token) {
-        final LocalDate expiration = getExpirationDateFromToken(token);
-        return expiration.isBefore(LocalDate.now());
+        final LocalDateTime expiration = getExpirationDateFromToken(token);
+        return expiration.isBefore(LocalDateTime.now());
     }
 
     /**
@@ -147,8 +152,6 @@ public class JwtTokenProvider implements Serializable {
 //
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token).get("admId").toString();
-
-//        return getClaimFromToken(token, Claims::getSubject);
     }
 
     /**
@@ -168,7 +171,9 @@ public class JwtTokenProvider implements Serializable {
      * @return
      */
     public Long getAdminNoFromToken(String token) {
-        return Long.parseLong(getClaimFromToken(token).get("sub").toString());
+        Long a = Long.parseLong(getClaimFromToken(token).get("sub").toString());
+        
+        return a;
     }
 
     /**
@@ -177,10 +182,10 @@ public class JwtTokenProvider implements Serializable {
      * @param token
      * @return
      */
-    public LocalDate getExpirationDateFromToken(String token) {
+    public LocalDateTime getExpirationDateFromToken(String token) {
         return getClaimFromToken(token).getExpiration().toInstant()
             .atZone(ZoneId.systemDefault())
-            .toLocalDate();
+            .toLocalDateTime();
     }
 
     public Claims getClaimFromToken(String token) {
@@ -247,8 +252,15 @@ public class JwtTokenProvider implements Serializable {
 
     public JwtAuthenticationResponse getJwtAuthenticationResponse(AdminDto adminDto) {
         String accessToken = generateAccessToken(adminDto);
-        LocalDate expiryDuration = getExpirationDateFromToken(accessToken);
+        LocalDateTime expiryDuration = getExpirationDateFromToken(accessToken);
 
         return new JwtAuthenticationResponse(accessToken, expiryDuration);
+    }
+
+    public void setHeaderAccessToken(ServletResponse response, JwtAuthenticationResponse jwtAuthenticationResponse) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        httpServletResponse.setHeader("accessToken", jwtAuthenticationResponse.getAccessToken());
+        httpServletResponse.setHeader("expiryDuration", String.valueOf(jwtAuthenticationResponse.getExpiryDuration()));
+
     }
 }

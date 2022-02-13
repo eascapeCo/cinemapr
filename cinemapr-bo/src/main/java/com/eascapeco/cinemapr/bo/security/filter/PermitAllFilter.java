@@ -24,7 +24,6 @@ public class PermitAllFilter extends FilterSecurityInterceptor {
 
     @Override
     protected InterceptorStatusToken beforeInvocation(Object object) {
-        System.out.println("PermitAllFilter");
         boolean permitAll = false;
         HttpServletRequest request = ((FilterInvocation) object).getRequest();
         for (RequestMatcher requestMatcher : permitAllRequestMatcher) {
