@@ -1,12 +1,11 @@
 import axios from 'axios'
 import store from '@/store'
-// 인증이 안되었을 경우 리턴 로그인 url 로 라우팅 하기 위해
+
+axios.defaults.headers['Content-Type'] = 'application/json'
 
 axios.interceptors.request.use(
   function (config) {
-    // Do something before request is sent
     config.headers.Authorization = store.state.access_token
-    config.headers['Content-Type'] = 'application/json'
     return config
   },
   function (error) {
@@ -17,8 +16,11 @@ axios.interceptors.request.use(
 // Add a response interceptor
 axios.interceptors.response.use(
   function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
+    if ('access_token' in response.headers && store.state.access_token !== response.headers.access_token) {
+      console.log('response > ' + response)
+      store.state.access_token = 'Bearer ' + response.headers.access_token
+      store.state.expires_in = response.headers.expires_in
+    }
     return response
   },
   function (error) {
@@ -27,3 +29,5 @@ axios.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export default axios

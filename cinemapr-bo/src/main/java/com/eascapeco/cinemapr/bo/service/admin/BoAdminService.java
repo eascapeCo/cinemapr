@@ -25,6 +25,7 @@ public class BoAdminService implements UserDetailsService {
 
     /**
      * Finds a admin in the database by username
+     *
      * @param adminId
      * @return
      */
@@ -39,6 +40,7 @@ public class BoAdminService implements UserDetailsService {
 
     /**
      * Finds a admin in the database by admin no
+     *
      * @param adminNo
      * @return
      */

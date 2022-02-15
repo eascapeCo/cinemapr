@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class JwtTokenProvider implements Serializable {
 
-    static final long JWT_TOKEN_EXP = (60 * 1) * 5; // 30 mins
+    static final long JWT_TOKEN_EXP = (60 * 1); // 30 mins
     static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24); // 30 days
 
     private final RedisService redisService;
@@ -172,7 +172,7 @@ public class JwtTokenProvider implements Serializable {
      */
     public Long getAdminNoFromToken(String token) {
         Long a = Long.parseLong(getClaimFromToken(token).get("sub").toString());
-        
+
         return a;
     }
 
@@ -259,8 +259,8 @@ public class JwtTokenProvider implements Serializable {
 
     public void setHeaderAccessToken(ServletResponse response, JwtAuthenticationResponse jwtAuthenticationResponse) {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        httpServletResponse.setHeader("accessToken", jwtAuthenticationResponse.getAccessToken());
-        httpServletResponse.setHeader("expiryDuration", String.valueOf(jwtAuthenticationResponse.getExpiryDuration()));
+        httpServletResponse.setHeader("access_token", jwtAuthenticationResponse.getAccessToken());
+        httpServletResponse.setHeader("expires_in", String.valueOf(jwtAuthenticationResponse.getExpiryDuration()));
 
     }
 }

@@ -14,12 +14,11 @@ public abstract class BaseEntity {
     @Column(updatable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDateTime regDate;
+    private LocalDateTime modDate;
+
     @Column(updatable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private Long regNo;
-
-    private LocalDateTime modDate;
-
     private Long modNo;
 
     public void createData(Long userNo) {
