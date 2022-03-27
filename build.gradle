@@ -44,10 +44,9 @@ allprojects {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
         implementation 'org.apache.commons:commons-lang3:3.12.0'
-        implementation 'com.auth0:java-jwt:3.18.1'
+        implementation 'com.auth0:java-jwt:3.18.3'
         implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-        // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
+        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
 
         runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2',
             // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:

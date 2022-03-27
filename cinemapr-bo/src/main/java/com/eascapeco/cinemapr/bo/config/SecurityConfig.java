@@ -17,6 +17,7 @@ import com.eascapeco.cinemapr.bo.service.redis.RedisService;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
@@ -47,8 +48,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String[] ignoredMatcherPattern = {"/js/**", "/**/favicon.ico"};
-    private final String[] permitAllPattern = {"/api/login", "/", "/js/**"};
+    private final String[] ignoredMatcherPattern = {"/css/**", "/js/**", "/**/favicon.ico"};
+    private final String[] permitAllPattern = {"/api/login", "/", "/loginForm"};
 
     private final AuthService authService;
     private final BoAdminService boAdminService;
@@ -63,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             .httpBasic().disable()
-            .authorizeRequests(authorize -> authorize.anyRequest().authenticated());
+            .authorizeRequests(authorize -> authorize.antMatchers("/loginForm").permitAll().anyRequest().authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(se -> se.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(permitAllFilter(), FilterSecurityInterceptor.class);
@@ -77,7 +78,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(ignoredMatcherPattern);
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        //web.ignoring().antMatchers(ignoredMatcherPattern);
     }
 
     @Override
@@ -109,7 +111,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new RestAuthenticationFailureHandler(objectMapper);
     }
 
-    @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtTokenProvider, boAdminService);
     }
