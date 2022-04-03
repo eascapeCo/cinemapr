@@ -13,7 +13,7 @@ export default new Vuex.Store({
   },
   plugins: [
     // paths는 값을 유지해야할 값만 넣어줌
-    createPersistedState({ paths: ['access_token'] })
+    createPersistedState({ paths: ['access_token', 'expires_in'] })
   ],
   getters: {
     getTokenExpiresIn (state) {
