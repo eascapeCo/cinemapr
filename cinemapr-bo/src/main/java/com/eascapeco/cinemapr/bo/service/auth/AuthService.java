@@ -11,8 +11,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 /**
  * 관리자 service
  *
@@ -25,7 +23,9 @@ import javax.transaction.Transactional;
 public class AuthService {
 
     private final BoAdminService boAdminService;
+
     private final JwtTokenProvider jwtTokenProvider;
+
     private final PasswordEncoder passwordEncoder;
 
     public JwtAuthenticationResponse createAccessTokenByLogin(AdminDto adminDto) {
@@ -34,9 +34,7 @@ public class AuthService {
     }
 
     public RefreshToken createRefreshTokenByLogin(AdminDto adminDto) {
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setRefreshToken(jwtTokenProvider.generateRefreshToken(adminDto));
-        refreshToken.setAdmNo(adminDto.getAdmNo());
+        RefreshToken refreshToken = new RefreshToken(adminDto.getAdmNo(), jwtTokenProvider.generateRefreshToken(adminDto));
 
         return refreshToken;
     }
