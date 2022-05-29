@@ -4,7 +4,7 @@ import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
-import com.eascapeco.cinemapr.bo.service.redis.RedisService;
+import com.eascapeco.cinemapr.bo.service.redis.RefreshTokenRedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
     private final AuthService authService;
     private final ObjectMapper objectMapper;
-    private final RedisService redisService;
+    private final RefreshTokenRedisRepository redisRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -32,7 +32,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
         RefreshToken refreshToken = authService.createRefreshTokenByLogin(adminDto);
 
-        redisService.pushByRefreshToken(adminDto, refreshToken, response);
+        redisRepository.save(refreshToken);
 
         try {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -3,8 +3,7 @@ package com.eascapeco.cinemapr.bo.security.token;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
-import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
-import com.eascapeco.cinemapr.bo.service.redis.RedisService;
+import com.eascapeco.cinemapr.bo.service.redis.RefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -33,14 +32,10 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider implements Serializable {
 
     static final long JWT_TOKEN_EXP = (60 * 1); // 30 mins
+
     static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24); // 30 days
 
-    private final RedisService redisService;
-    private BoAdminService boAdminService;
-
-    public JwtTokenProvider(RedisService redisService) {
-        this.redisService = redisService;
-    }
+    private final RefreshTokenRedisRepository redisRepository;
 
     byte[] byteKeys;
 
@@ -53,6 +48,10 @@ public class JwtTokenProvider implements Serializable {
     }
 
     SecretKey key = Keys.hmacShaKeyFor(Base64.getEncoder().encodeToString(byteKeys).getBytes());
+
+    public JwtTokenProvider(RefreshTokenRedisRepository redisRepository) {
+        this.redisRepository = redisRepository;
+    }
 
     /**
      * 토큰을 생성하는 메서드
@@ -246,8 +245,8 @@ public class JwtTokenProvider implements Serializable {
     }
 
     public RefreshToken getRefreshToken(String key) {
-        RefreshToken refreshToken = (RefreshToken) redisService.getValue(key);
-        return refreshToken;
+        return redisRepository.findById(key).get();
+//        return refreshToken;
     }
 
     public JwtAuthenticationResponse getJwtAuthenticationResponse(AdminDto adminDto) {

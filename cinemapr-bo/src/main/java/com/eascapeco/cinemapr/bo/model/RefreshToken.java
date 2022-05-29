@@ -1,15 +1,22 @@
 package com.eascapeco.cinemapr.bo.model;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 
-@Data
-@RedisHash(timeToLive = 7)
+@Getter
+@AllArgsConstructor
+@RedisHash(value = "refreshToken", timeToLive = 86400L)
 public class RefreshToken implements Serializable {
-    private static final long serialVersionUID = -7353484588260422449L;
+
+    private static final long serialVersionUID = -3324566589694238922L;
+
+    @Id
     private Long admNo;
+
     private String refreshToken;
 
 }

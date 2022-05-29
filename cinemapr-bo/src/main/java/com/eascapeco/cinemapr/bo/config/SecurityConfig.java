@@ -13,7 +13,7 @@ import com.eascapeco.cinemapr.bo.security.provider.RestAuthenticationProvider;
 import com.eascapeco.cinemapr.bo.security.token.JwtTokenProvider;
 import com.eascapeco.cinemapr.bo.service.admin.BoAdminService;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
-import com.eascapeco.cinemapr.bo.service.redis.RedisService;
+import com.eascapeco.cinemapr.bo.service.redis.RefreshTokenRedisRepository;
 import com.eascapeco.cinemapr.bo.service.security.SecurityResourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -49,15 +49,20 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final String[] ignoredMatcherPattern = {"/css/**", "/js/**", "/**/favicon.ico"};
+
     private final String[] permitAllPattern = {"/api/login", "/", "/loginForm"};
 
     private final AuthService authService;
+
     private final BoAdminService boAdminService;
+
     private final ObjectMapper objectMapper;
+
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisService redisService;
 
     private final SecurityResourceService securityResourceService;
+
+    private final RefreshTokenRedisRepository redisRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {//authorize.antMatchers("/loginForm").permitAll()
@@ -103,7 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler restAuthenticationSuccessHandler() {
-        return new RestAuthenticationSuccessHandler(authService, objectMapper, redisService);
+        return new RestAuthenticationSuccessHandler(authService, objectMapper, redisRepository);
     }
 
     @Bean

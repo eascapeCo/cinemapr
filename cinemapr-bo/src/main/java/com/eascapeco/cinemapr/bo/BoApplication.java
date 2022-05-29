@@ -9,12 +9,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.core.RedisKeyValueAdapter.EnableKeyspaceEvents;
+import org.springframework.data.redis.core.RedisKeyValueAdapter.ShadowCopy;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EntityScan(basePackages = "com.eascapeco.cinemapr")
 @EnableJpaRepositories(basePackages = "com.eascapeco.cinemapr")
 @SpringBootApplication(scanBasePackages = "com.eascapeco.cinemapr")
+@EnableRedisRepositories(enableKeyspaceEvents = EnableKeyspaceEvents.ON_STARTUP, shadowCopy = ShadowCopy.OFF)
 public class BoApplication {
 
     @Value("${jasypt.encryptor.password}")

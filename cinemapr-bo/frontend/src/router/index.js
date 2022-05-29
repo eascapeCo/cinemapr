@@ -22,7 +22,7 @@ const routes = [
       { path: 'grid', component: () => import(/* webpackChunkName: "about" */ '../views/sample/GirdSample.vue') },
       { path: 'menuForm', component: () => import(/* webpackChunkName: "about" */ '../views/menu/MenuView.vue') },
       { path: 'rolesList', component: () => import(/* webpackChunkName: "about" */ '../views/roles/RolesList') },
-      { path: 'admins', component: () => import(/* webpackChunkName: "about" */ '../views/auth/Admins.vue') },
+      { path: 'adminList', component: () => import(/* webpackChunkName: "about" */ '../views/auth/AdminList.vue') },
       { path: 'adminManagement/:id', component: () => import(/* webpackChunkName: "about" */ '../views/auth/AdminManagement.vue') },
       { path: 'adminForm/:id', component: () => import('@/views/auth/AdminForm') }
     ]
