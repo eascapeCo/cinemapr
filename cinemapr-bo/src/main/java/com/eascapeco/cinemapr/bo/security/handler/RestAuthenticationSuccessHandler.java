@@ -5,6 +5,7 @@ import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
 import com.eascapeco.cinemapr.bo.service.auth.AuthService;
 import com.eascapeco.cinemapr.bo.service.redis.RefreshTokenRedisRepository;
+import com.eascapeco.cinemapr.bo.util.CookieUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,8 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
         redisRepository.save(refreshToken);
 
+        setRefreshTokenOnCookie(refreshToken.getUid(), response);
+
         try {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(objectMapper.writeValueAsString(jwtAuthenticationResponse));
@@ -42,5 +45,9 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
             log.error(e.getMessage());
         }
 
+    }
+
+    public void setRefreshTokenOnCookie(String uid, HttpServletResponse response) {
+        CookieUtils.setCookie("uid", uid, 7 * 24 * 60 * 60, response);
     }
 }

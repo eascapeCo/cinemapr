@@ -9,12 +9,14 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-@RedisHash(value = "refreshToken", timeToLive = 86400L)
+@RedisHash(value = "refreshToken", timeToLive = 86400)
 public class RefreshToken implements Serializable {
 
     private static final long serialVersionUID = -3324566589694238922L;
 
     @Id
+    private String uid;
+
     private Long admNo;
 
     private String refreshToken;

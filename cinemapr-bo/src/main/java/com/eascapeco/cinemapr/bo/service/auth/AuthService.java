@@ -11,6 +11,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 /**
  * 관리자 service
  *
@@ -34,7 +36,7 @@ public class AuthService {
     }
 
     public RefreshToken createRefreshTokenByLogin(AdminDto adminDto) {
-        RefreshToken refreshToken = new RefreshToken(adminDto.getAdmNo(), jwtTokenProvider.generateRefreshToken(adminDto));
+        RefreshToken refreshToken = new RefreshToken(UUID.randomUUID().toString(), adminDto.getAdmNo(), jwtTokenProvider.generateRefreshToken(adminDto));
 
         return refreshToken;
     }

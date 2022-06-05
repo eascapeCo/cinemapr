@@ -1,5 +1,6 @@
 package com.eascapeco.cinemapr.bo.security.token;
 
+import com.eascapeco.cinemapr.api.exception.RefreshTokenNotFoundException;
 import com.eascapeco.cinemapr.api.model.payload.JwtAuthenticationResponse;
 import com.eascapeco.cinemapr.bo.model.RefreshToken;
 import com.eascapeco.cinemapr.bo.model.dto.AdminDto;
@@ -31,9 +32,9 @@ import java.util.stream.Collectors;
 @Transactional
 public class JwtTokenProvider implements Serializable {
 
-    static final long JWT_TOKEN_EXP = (60 * 1); // 30 mins
+    static final long JWT_TOKEN_EXP = (60 * 30); // 30 mins
 
-    static final long JWT_REFRESH_TOKEN_EXP = 30 * (60 * 60 * 24); // 30 days
+    static final long JWT_REFRESH_TOKEN_EXP = (60 * 60 * 24); // 1 days
 
     private final RefreshTokenRedisRepository redisRepository;
 
@@ -244,9 +245,9 @@ public class JwtTokenProvider implements Serializable {
         return tokenStatus;
     }
 
-    public RefreshToken getRefreshToken(String key) {
-        return redisRepository.findById(key).get();
-//        return refreshToken;
+    public RefreshToken getRefreshToken(String key) throws RefreshTokenNotFoundException {
+        return redisRepository.findById(key)
+            .orElseThrow(() -> new RefreshTokenNotFoundException(key));
     }
 
     public JwtAuthenticationResponse getJwtAuthenticationResponse(AdminDto adminDto) {

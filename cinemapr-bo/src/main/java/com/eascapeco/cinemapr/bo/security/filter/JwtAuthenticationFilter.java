@@ -44,7 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             this.setAuthentication(accessToken, adminDto);
 
         } else if (tokenStatus == TokenStatus.EXPIRED) {
-            RefreshToken refreshToken = jwtTokenProvider.getRefreshToken(CookieUtils.getCookie("uid", request));
+            String uid = CookieUtils.getCookie("uid", request);
+
+            RefreshToken refreshToken = jwtTokenProvider.getRefreshToken(uid);
 
             if (jwtTokenProvider.validateToken(refreshToken.getRefreshToken()) == TokenStatus.ACTIVE) {
                 adminDto = boAdminService.findById(refreshToken.getAdmNo());
@@ -60,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } else {
             SecurityContextHolder.clearContext();
-            throw new InvalidTokenRequestException("AccessToken", accessToken, "Expired Token");
+            throw new InvalidTokenRequestException("AccessToken", accessToken, "Invalid Token");
         }
 
         filterChain.doFilter(request, response);
