@@ -62,26 +62,9 @@
                 persistent
                 max-width="800px"
               >
-              </v-dialog>
-              <!--
-              <v-dialog
-                v-model="dialog"
-                persistent
-                max-width="800px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    dark
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    Open Dialog
-                  </v-btn>
-                </template>
                 <v-card>
                   <v-card-title>
-                    <span class="headline">User Profile</span>
+                    <span class="headline">권한 정보</span>
                   </v-card-title>
                   <v-card-text>
                     <v-container>
@@ -174,7 +157,6 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              -->
             </v-card>
           </v-card>
         </v-col>
@@ -240,10 +222,10 @@ export default {
     console.log(this.frameworkComponents.rolesButton)
   },
   methods: {
-    rolesPopup: function (createElement) {
-      this.gridApi.refreshCells()
-      console.log(this.frameworkComponents.rolresButton.template)
-      console.log('!1')
+    rolesPopup: function (rolNo) {
+      // this.gridApi.refreshCells()
+      console.log(`test ${rolNo}`)
+      this.dialog = true
     },
     getPage: function (page) {
       this.currentPage = page
@@ -254,9 +236,6 @@ export default {
         this.totalPages = res.data.totalPages
         this.gridApi.setRowData(this.rowData)
       })
-    },
-    test: function () {
-      console.log('test')
     }
   },
   mounted () {
