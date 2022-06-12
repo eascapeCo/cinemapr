@@ -3,8 +3,8 @@ import Vue from 'vue'
 
 export default Vue.extend({
   template: `
-        <div @click="link">{{this.params.data.rolNm}}</div>
-    `,
+      <div @click="link">{{this.params.data.rolNm}}</div>
+  `,
   data: () => ({}),
   beforeMount () {},
   created () {},
@@ -27,7 +27,9 @@ export default Vue.extend({
       */
     },
     link: function () {
-      this.$router.push(`/adminForm/${this.params.data.rolNo}`)
+      console.info('hh')
+      this.$parent.test()
+      // this.$router.push(`/adminForm/${this.params.data.rolNo}`)
     }
   }
 })

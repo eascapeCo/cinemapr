@@ -56,10 +56,14 @@
                 @input="getPage"
               />
             </v-card-actions>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary">Share</v-btn>
-              <v-btn v-on:click="rolesPopup">Explore</v-btn>
+            <v-card>
+              <v-dialog
+                v-model="dialog"
+                persistent
+                max-width="800px"
+              >
+              </v-dialog>
+              <!--
               <v-dialog
                 v-model="dialog"
                 persistent
@@ -170,7 +174,8 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-            </v-card-actions>
+              -->
+            </v-card>
           </v-card>
         </v-col>
       </v-row>
@@ -197,14 +202,14 @@ export default {
     menus: [],
     currentPage: 0,
     totalPages: 0,
+    dialog: false,
     data: {
       gridOptions: null,
       columnDefs: null,
       rowData: [],
       frameworkComponents: null,
       context: null,
-      defaultColDef: null,
-      dialog: false
+      defaultColDef: null
     }
   }),
   components: {
@@ -217,7 +222,7 @@ export default {
     this.columnDefs = [
       { headerName: 'rolNo', field: 'rolNo' },
       { headerName: 'rolNm', field: 'rolNm' },
-      { headerName: 'roles', field: 'roles', cellRenderer: 'rolresButton' },
+      { headerName: 'roles', field: 'roles', cellRenderer: 'rolesButton' },
       { headerName: 'regDate', field: 'regDate' },
       { headerName: 'regNo', field: 'regNo' },
       { headerName: 'modDate', field: 'modDate' },
@@ -226,13 +231,13 @@ export default {
     this.rowData = []
     this.context = { componentParent: this }
     this.frameworkComponents = {
-      rolresButton: RolesButton
+      rolesButton: RolesButton
     }
     this.defaultColDef = {
       editable: false,
       minWidth: 100
     }
-    console.log(this.frameworkComponents.rolresButton)
+    console.log(this.frameworkComponents.rolesButton)
   },
   methods: {
     rolesPopup: function (createElement) {
@@ -249,6 +254,9 @@ export default {
         this.totalPages = res.data.totalPages
         this.gridApi.setRowData(this.rowData)
       })
+    },
+    test: function () {
+      console.log('test')
     }
   },
   mounted () {
